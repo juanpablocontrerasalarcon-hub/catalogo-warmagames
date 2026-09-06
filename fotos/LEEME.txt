@@ -1,0 +1,19 @@
+Esta carpeta guarda las fotos de los productos y la del QR de pago.
+
+Cómo subir una foto:
+1. Entra a esta carpeta "fotos" dentro del repositorio en GitHub.
+2. Toca el botón "Add file" (arriba a la derecha) y elige "Upload files".
+3. Arrastra la foto desde tu computadora o celular.
+4. Presiona "Commit changes" (botón verde).
+
+Después, en productos.js, escribe el nombre exacto del archivo
+(con mayúsculas, minúsculas y extensión .jpg o .png) en el campo "imagen".
+
+Recomendación: nombra cada foto igual que el "id" del producto.
+Ejemplo: el producto con id "HEY-1000-CD" → sube "HEY-1000-CD.jpg"
+y en productos.js escribe: imagen: "HEY-1000-CD.jpg"
+
+Así, si en el futuro hay que cambiar una foto, se encuentra al toque.
+
+Fotos cuadradas de 1000x1000 píxeles se ven mejor, pero cualquier
+tamaño funciona.
