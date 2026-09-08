@@ -61,6 +61,66 @@ instrucciones escritas arriba con ejemplos.
 - Para varias fotos del mismo producto, sepáralas con `|` en el campo
   `imagenes`. Ejemplo: `WG-001-2.jpg|WG-001-3.jpg`
 
+## Ofertas, novedades y sellos
+
+Dos columnas controlan todo esto, sin tocar diseño:
+
+- **`precio_antes`**: escribe el precio viejo y deja el nuevo en `precio`.
+  La web tacha el viejo y calcula sola el porcentaje (sello rojo `-22%`).
+  Para quitar la oferta, borra `precio_antes`.
+- **`etiqueta`**: sello azul sobre la foto. Escribe `Nuevo`, `Oferta`,
+  `Últimas unidades`, `2x1` o lo que quieras.
+
+Los productos con `precio_antes` aparecen solos en la sección "Ofertas de
+la semana" del inicio y en el filtro **Ofertas**. Los que dicen "Nuevo"
+entran a **Novedades**.
+
+## Menú lateral
+
+El botón ☰ abre un panel con: todo el catálogo, ofertas, novedades,
+categorías y marcas (con el número de productos de cada una), lista de
+deseos, carrito, envíos y las redes. Se arma solo con los productos que
+existan; no hay que mantenerlo a mano.
+
+## Lista de deseos
+
+El corazón de cada producto lo guarda en la lista del cliente, y desde
+ahí hay un botón para **enviar toda la lista por WhatsApp**. Así llegan
+las peticiones ya escritas.
+
+La lista se guarda en el navegador del cliente (no necesita cuenta ni
+contraseña). Eso significa que si cambia de teléfono o borra los datos
+del navegador, la lista se pierde. Para que sobreviva entre dispositivos
+haría falta login con cuentas, que necesita un servidor.
+
+## Envíos por departamento
+
+Se configuran en `config.js`, en el campo `ENVIOS`. Cada departamento
+tiene su modo de entrega y su explicación. En el carrito el cliente elige
+su departamento, ve cómo le llega, y **escribe él mismo dónde quiere
+recibir el pedido** en un campo de texto. Todo eso viaja dentro del
+mensaje de WhatsApp.
+
+- **La Paz** (entrega a domicilio): pide la dirección y además muestra un
+  **mapa** para marcar el punto exacto, que se manda como link de Google
+  Maps junto al pedido.
+- **Los demás departamentos** (flota): el modo dice "lugar a coordinar" y
+  el cliente escribe la terminal, la oficina de la flota o la dirección
+  que prefiera. No se fija ninguna dirección desde la web.
+
+## Productos agotados
+
+Poniendo `Agotado` en la columna `stock`, el producto:
+
+- muestra un sello gris **Agotado** y la foto atenuada,
+- pierde el botón de agregar al carrito (queda solo el de WhatsApp, para
+  que el cliente pregunte cuándo llega),
+- y aparece en el filtro **Agotados**, tanto en los chips de categorías
+  como en el menú lateral.
+
+Sigue visible en el catálogo. Para esconderlo del todo hay que poner
+`mostrar` en `No`.
+
 ## Cosas que se configuran en config.js
 
 | Campo | Para qué sirve |

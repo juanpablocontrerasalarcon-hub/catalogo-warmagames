@@ -15,6 +15,8 @@
 <style>
 :root{
   --nvy:#16256B; --nvy2:#0F1A4D; --red:#E63A2E; --yel:#FFC61E; --grn:#35A93B;
+  /* colores vivos de oferta */
+  --of1:#FF6A3D; --of2:#F5122E; --ofx:#E00F2A; --nue1:#00C853; --nue2:#00A344;
   --blu:#2F6FD0; --wa:#25D366; --wa2:#128C7E;
   --pg:#FFFFFF; --pg2:#F4F6FC; --pg3:#EDF1FA;
   --txt:#151C3B; --sub:#5C6690; --ln:#E1E6F5;
@@ -23,8 +25,10 @@
   --r:14px; --sh:0 2px 10px rgba(20,30,80,.07); --sh2:0 10px 30px rgba(20,30,80,.13);
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--body);color:var(--txt);background:var(--pg);font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
 button{font-family:inherit;cursor:pointer}
 a{color:var(--blu);text-decoration:none}
 img{max-width:100%}
@@ -38,10 +42,13 @@ h1,h2,h3{font-family:var(--disp);letter-spacing:.2px;margin:0}
 .topbar .in{display:flex;gap:16px;align-items:center;justify-content:space-between;min-height:36px;flex-wrap:wrap}
 .topbar a{color:#fff;display:inline-flex;align-items:center;gap:6px}
 .topbar .redes{display:flex;gap:14px}
+.topbar .redes svg{width:13px;height:13px}
 
 /* ---------- header ---------- */
 header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z-index:40;box-shadow:var(--sh)}
-.hrow{display:flex;align-items:center;gap:14px;padding:10px 0}
+.hrow{display:flex;align-items:center;gap:12px;padding:10px 0}
+.burger{border:0;background:var(--pg2);width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:var(--nvy);flex:none}
+.burger:hover{background:var(--pg3)}
 .brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex:none}
 .brand img{width:46px;height:46px;border-radius:11px;flex:none}
 .brand b{font-family:var(--disp);font-size:18.5px;color:var(--nvy);display:block;line-height:1.1;font-weight:800}
@@ -54,7 +61,7 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .search .ic{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--sub);pointer-events:none;display:flex}
 .search .clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--sub);
   font-size:19px;line-height:1;padding:6px;border-radius:50%}
-.acts{display:flex;gap:9px;align-items:center;flex:none}
+.acts{display:flex;gap:8px;align-items:center;flex:none}
 .btn{border:0;border-radius:999px;padding:11px 17px;font-size:13.5px;font-weight:800;display:inline-flex;
   align-items:center;justify-content:center;gap:7px;transition:transform .12s,box-shadow .12s,filter .12s;font-family:var(--body)}
 .btn:hover{transform:translateY(-1px);box-shadow:var(--sh2)}
@@ -63,12 +70,50 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .btn-nvy{background:var(--nvy);color:#fff}
 .btn-yel{background:var(--yel);color:#3A2A00}
 .btn-out{background:#fff;color:var(--nvy);box-shadow:inset 0 0 0 1.7px var(--ln)}
-.btn-gh{background:var(--pg2);color:var(--nvy)}
-.cartbtn{position:relative}
-.cartbtn .n{position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;font-size:10.5px;font-weight:800;
+.icobtn{border:0;background:var(--pg2);width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+  color:var(--nvy);position:relative;flex:none}
+.icobtn:hover{background:var(--pg3)}
+.icobtn .n{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:10.5px;font-weight:800;
   min-width:19px;height:19px;border-radius:10px;display:grid;place-items:center;padding:0 5px;border:2px solid #fff}
+.icobtn.wish.on{color:var(--red)}
 
-/* ---------- categorias ---------- */
+/* ---------- menú lateral ---------- */
+.ovl{position:fixed;inset:0;background:rgba(10,16,45,.5);z-index:60;opacity:0;pointer-events:none;transition:opacity .22s}
+.ovl.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(340px,86vw);background:#fff;z-index:61;
+  transform:translateX(-102%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:var(--sh2)}
+.drawer.open{transform:translateX(0)}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--ln);flex:none}
+.dhead img{width:40px;height:40px;border-radius:10px}
+.dhead b{font-family:var(--disp);font-size:17px;color:var(--nvy)}
+.dclose{border:0;background:var(--pg2);width:36px;height:36px;border-radius:10px;font-size:20px;color:var(--nvy);line-height:1}
+.dbody{overflow-y:auto;flex:1;padding-bottom:20px}
+.dgroup{font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#98A1C4;
+  padding:20px 20px 8px;border-bottom:1px solid var(--ln)}
+.dlink{display:flex;align-items:center;width:100%;border:0;background:none;padding:13px 20px;
+  font-size:14.5px;font-weight:700;color:var(--txt);text-align:left;border-bottom:1px solid var(--ln);
+  font-family:var(--body);transition:background .12s,color .12s}
+.dlink:hover{background:var(--pg2);color:var(--nvy)}
+.dlink .ct{margin-left:auto;font-size:11.5px;color:var(--sub);font-weight:800;background:var(--pg2);
+  padding:2px 9px;border-radius:6px;min-width:32px;text-align:center}
+.dlink.hot{color:var(--ofx)}
+.dlink.hot .ct{background:linear-gradient(135deg,var(--of1),var(--of2));color:#fff}
+.dsec{border-bottom:1px solid var(--ln)}
+.dsec>summary{display:flex;align-items:center;padding:13px 20px;font-size:14.5px;font-weight:700;
+  cursor:pointer;list-style:none;color:var(--txt)}
+.dsec>summary:hover{background:var(--pg2)}
+.dsec>summary::-webkit-details-marker{display:none}
+.dsec>summary::after{content:'';margin-left:auto;width:8px;height:8px;border-right:2px solid #98A1C4;
+  border-bottom:2px solid #98A1C4;transform:rotate(45deg) translateY(-2px);transition:transform .18s}
+.dsec[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+.dsub{padding:2px 0 10px;background:#FBFCFF}
+.dsub button{display:flex;align-items:center;width:100%;border:0;background:none;padding:9px 20px 9px 34px;
+  font-size:13.5px;font-weight:600;color:var(--sub);text-align:left;font-family:var(--body)}
+.dsub button:hover{background:var(--pg2);color:var(--nvy)}
+.dsub button.on{color:var(--nvy);font-weight:800}
+.dsub button .ct{margin-left:auto;font-size:11px;color:#98A1C4;font-weight:700}
+
+/* ---------- categorías ---------- */
 .cats{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:67px;z-index:30}
 .cats .in{display:flex;gap:8px;overflow-x:auto;padding-top:9px;padding-bottom:9px;scrollbar-width:none}
 .cats .in::-webkit-scrollbar{display:none}
@@ -76,6 +121,10 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
   font-size:13px;font-weight:800;white-space:nowrap;transition:all .15s}
 .chip:hover{border-color:var(--blu);color:var(--nvy)}
 .chip.on{background:var(--nvy);border-color:var(--nvy);color:#fff}
+.chip.of{border-color:#F6C9C6;color:var(--ofx)}
+.chip.of.on{background:var(--ofx);border-color:var(--ofx);color:#fff}
+.chip.ago{border-color:#D7DBEA;color:#7B84A6}
+.chip.ago.on{background:#7B84A6;border-color:#7B84A6;color:#fff}
 
 /* ---------- hero ---------- */
 .hero{position:relative;overflow:hidden;background:var(--nvy)}
@@ -109,40 +158,66 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 /* ---------- grid de productos ---------- */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:18px}
 .pc{border:1px solid var(--ln);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;background:#fff;
-  transition:transform .16s,box-shadow .16s,border-color .16s}
+  transition:transform .16s,box-shadow .16s,border-color .16s;position:relative}
 .pc:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:#CBD5F0}
 .pc .im{aspect-ratio:4/3;background:#fff;position:relative;cursor:pointer;padding:12px;display:grid;place-items:center}
 .pc .im img{width:100%;height:100%;object-fit:contain;display:block}
 .noimg{width:100%;height:100%;display:grid;place-items:center;color:#A9B2D4;font-size:11px;font-weight:800;
   letter-spacing:.06em;text-transform:uppercase;background:var(--pg2);border-radius:9px}
-.tag{position:absolute;top:10px;left:10px;background:var(--yel);color:#3A2A00;font-size:10.5px;font-weight:800;
-  letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
-.out{position:absolute;inset:0;background:rgba(244,246,252,.78);display:grid;place-items:center;backdrop-filter:blur(1px)}
-.out span{background:var(--nvy);color:#fff;font-size:11px;font-weight:800;letter-spacing:.08em;
-  text-transform:uppercase;padding:6px 13px;border-radius:999px}
-.pb{padding:13px 14px 0;display:flex;flex-direction:column;gap:5px;flex:1}
+/* sellos: van debajo de la foto, nunca encima del producto */
+.badges{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px;align-items:center}
+.bdg{display:inline-flex;align-items:center;height:22px;font-size:10.5px;font-weight:800;letter-spacing:.04em;
+  text-transform:uppercase;padding:0 10px;border-radius:6px;line-height:1;white-space:nowrap;flex:none}
+.bdg.desc{background:linear-gradient(135deg,var(--of1),var(--of2));color:#fff;box-shadow:0 2px 7px rgba(245,18,46,.3)}
+.bdg.nue{background:linear-gradient(135deg,var(--nue1),var(--nue2));color:#fff;box-shadow:0 2px 7px rgba(0,163,68,.3)}
+.bdg.tag{background:var(--yel);color:#4A3300;box-shadow:0 2px 7px rgba(255,198,30,.42)}
+.bdg.ago{background:#7B84A6;color:#fff}
+.heart{position:absolute;top:9px;right:9px;z-index:3;width:36px;height:36px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.94);box-shadow:0 2px 8px rgba(20,30,80,.16);display:grid;place-items:center;
+  color:#C3CBE6;transition:color .15s,transform .15s}
+.heart:hover{transform:scale(1.1);color:var(--red)}
+.heart.on{color:var(--red)}
+.out{position:absolute;inset:0;background:rgba(244,246,252,.62);backdrop-filter:saturate(.35)}
+.pb{padding:13px 14px 15px;display:flex;flex-direction:column;gap:5px;flex:1}
 .mk{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blu)}
 .nm{font-size:14.5px;font-weight:700;line-height:1.3;margin:0;cursor:pointer;font-family:var(--body);
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pz{font-size:12px;color:var(--sub);font-weight:700}
-.pr{font-family:var(--disp);font-size:22px;font-weight:800;color:var(--nvy);margin-top:auto;padding-top:8px;
-  font-variant-numeric:tabular-nums;line-height:1.1}
+.prow{margin-top:auto;padding-top:10px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.prw{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;min-width:0}
+.pact{display:flex;gap:6px;align-items:center;flex:none}
+.cbtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:0;flex:none;
+  transition:transform .13s,box-shadow .13s,filter .13s}
+.cbtn:hover{transform:scale(1.09);box-shadow:0 4px 14px rgba(20,30,80,.22)}
+.cbtn:active{transform:scale(.97)}
+.cbtn.add{background:var(--nvy);color:#fff}
+.cbtn.wa{background:var(--wa);color:#fff}
+.cbtn.off{background:var(--pg3);color:#9AA3C4;cursor:not-allowed}
+.cbtn.off:hover{transform:none;box-shadow:none}
+.pr{font-family:var(--disp);font-size:22px;font-weight:800;color:var(--nvy);font-variant-numeric:tabular-nums;line-height:1}
+.pr.of{color:var(--ofx)}
+.prv{font-size:13.5px;color:#8A93B5;font-weight:700;text-decoration:line-through}
 .pr small{font-size:12.5px;color:var(--sub);font-weight:700;font-family:var(--body)}
-.pa{padding:11px 14px 14px;display:flex;gap:7px}
-.pa .btn{flex:1;padding:10px;font-size:13px}
+
 .more{display:grid;place-items:center;padding:30px 0 6px}
 
 /* ---------- detalle ---------- */
 .back{background:none;border:0;color:var(--blu);font-size:14px;font-weight:800;padding:22px 0 6px;display:inline-flex;gap:7px;align-items:center}
 .detail{padding:6px 0 40px;display:grid;grid-template-columns:1.05fr 1fr;gap:38px;align-items:start}
-.gal .main{border:1px solid var(--ln);border-radius:var(--r);background:#fff;aspect-ratio:4/3;display:grid;place-items:center;padding:20px}
+.gal .main{border:1px solid var(--ln);border-radius:var(--r);background:#fff;aspect-ratio:4/3;display:grid;place-items:center;padding:20px;position:relative}
 .gal .main img{width:100%;height:100%;object-fit:contain}
 .thumbs{display:flex;gap:9px;margin-top:11px;flex-wrap:wrap}
 .thumbs button{width:70px;height:70px;border-radius:10px;border:1.6px solid var(--ln);background:#fff;padding:5px;display:grid;place-items:center}
 .thumbs button.on{border-color:var(--nvy);box-shadow:0 0 0 2px rgba(22,37,107,.14)}
 .thumbs img{width:100%;height:100%;object-fit:contain}
 .detail h2{font-size:clamp(24px,3.4vw,33px);color:var(--nvy);margin:8px 0 10px;line-height:1.15}
-.detail .big{font-family:var(--disp);font-size:38px;font-weight:800;color:var(--nvy);font-variant-numeric:tabular-nums;line-height:1;margin-top:14px;display:block}
+.dprice{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:14px}
+.detail .big{font-family:var(--disp);font-size:38px;font-weight:800;color:var(--nvy);font-variant-numeric:tabular-nums;line-height:1}
+.detail .big.of{color:var(--ofx)}
+.detail .bigv{font-size:20px;color:#8A93B5;font-weight:700;text-decoration:line-through}
+.ahorro{background:linear-gradient(135deg,var(--of1),var(--of2));color:#fff;font-size:12.5px;font-weight:800;
+  padding:6px 13px;border-radius:8px;box-shadow:0 2px 8px rgba(245,18,46,.28)}
+.dbadges{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
 .spec{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
 .spec td{padding:10px 0;border-bottom:1px solid var(--ln)}
 .spec td:first-child{color:var(--sub);font-weight:600}
@@ -154,7 +229,7 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .dbtns .btn{padding:14px 22px;font-size:14.5px}
 
 /* ---------- carrito ---------- */
-.cart{padding:8px 0 44px;max-width:660px}
+.cart{padding:8px 0 44px;max-width:680px}
 .ci{display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid var(--ln)}
 .ci .th{width:64px;height:64px;border-radius:10px;background:#fff;border:1px solid var(--ln);flex:none;padding:4px;display:grid;place-items:center}
 .ci .th img{width:100%;height:100%;object-fit:contain}
@@ -167,15 +242,46 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .rm{background:none;border:0;color:var(--sub);font-size:12.5px;text-decoration:underline;padding:3px 0;font-weight:700}
 .tot{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;font-size:16px;font-weight:700}
 .tot b{font-family:var(--disp);font-size:31px;color:var(--nvy);font-variant-numeric:tabular-nums}
-.pay{background:var(--pg2);border:1px solid var(--ln);border-radius:var(--r);padding:24px;text-align:center}
-.pay h3{margin:0 0 6px;font-size:19px;color:var(--nvy)}
-.pay p{margin:0 0 16px;font-size:13.5px;color:var(--sub);font-weight:600}
+.ahorro-tot{color:#136B37;font-size:13.5px;font-weight:800;text-align:right;padding-bottom:12px}
+
+.box{background:var(--pg2);border:1px solid var(--ln);border-radius:var(--r);padding:22px;margin-bottom:18px}
+.box h3{margin:0 0 6px;font-size:19px;color:var(--nvy)}
+.box p{margin:0 0 14px;font-size:13.5px;color:var(--sub);font-weight:600}
+.field{margin-bottom:14px;text-align:left}
+.field label{display:block;font-size:13px;font-weight:800;color:var(--nvy);margin-bottom:6px}
+.field select,.field input,.field textarea{width:100%;border:1.6px solid var(--ln);border-radius:10px;padding:11px 13px;
+  font-size:14.5px;font-family:inherit;color:var(--txt);background:#fff}
+.field select:focus,.field input:focus,.field textarea:focus{outline:none;border-color:var(--blu)}
+.envinfo{background:#fff;border:1.6px solid var(--ln);border-left:4px solid var(--blu);border-radius:10px;padding:14px 16px;
+  font-size:14px;text-align:left;margin-bottom:14px}
+.envinfo b{display:block;color:var(--nvy);margin-bottom:4px;font-size:14.5px}
+.envinfo span{color:var(--sub);font-weight:600}
+#mapa{height:280px;border-radius:12px;border:1.6px solid var(--ln);margin-bottom:10px;background:var(--pg3)}
+.mapnote{font-size:12.5px;color:var(--sub);font-weight:700;margin:0 0 12px;text-align:left}
+.pay{text-align:center}
 .qr{width:230px;height:230px;margin:0 auto 16px;background:#fff;border:2px dashed var(--ln);border-radius:12px;
   display:grid;place-items:center;color:#A9B2D4;font-size:12px;font-weight:700;text-align:center;padding:14px;overflow:hidden}
 .qr img{width:100%;height:100%;object-fit:contain}
 .steps{text-align:left;font-size:14px;color:var(--txt);margin:0 0 18px;padding-left:20px;font-weight:600}
 .steps li{margin-bottom:6px}
+.bank{background:#fff;border:1.6px solid var(--ln);border-radius:12px;padding:16px 18px;margin:0 0 18px;text-align:left}
+.bank h4{font-family:var(--disp);font-size:16px;color:var(--nvy);margin:0 0 10px}
+.brow{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--ln);font-size:14px;flex-wrap:wrap}
+.brow:first-of-type{border-top:0}
+.brow span{color:var(--sub);font-weight:700;min-width:62px}
+.brow b{font-weight:800;color:var(--txt);flex:1;word-break:break-word}
+.copy{border:0;background:var(--pg3);color:var(--nvy);font-size:12px;font-weight:800;padding:6px 12px;
+  border-radius:999px;font-family:var(--body)}
+.copy:hover{background:var(--nvy);color:#fff}
 .empty{padding:56px 20px;text-align:center;color:var(--sub);font-weight:600}
+
+/* ---------- envíos ---------- */
+.envtabla{display:grid;gap:12px}
+.envcard{background:#fff;border:1px solid var(--ln);border-radius:var(--r);padding:18px 20px;display:grid;
+  grid-template-columns:auto 1fr;gap:16px;align-items:start}
+.envcard .dep{font-family:var(--disp);font-size:17px;color:var(--nvy);font-weight:800;min-width:118px}
+.envcard .mod{font-size:14px;font-weight:800;color:var(--blu);margin-bottom:3px}
+.envcard .det{font-size:14px;color:var(--sub);font-weight:600}
 
 /* ---------- nosotros / grupo ---------- */
 .info{background:var(--pg2);border-top:1px solid var(--ln)}
@@ -190,7 +296,6 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .grupo img{width:190px;border-radius:12px;display:block}
 .grupo h3{font-size:21px;color:var(--nvy);margin-bottom:7px}
 .grupo p{margin:0 0 15px;color:var(--sub);font-weight:600;font-size:14.5px}
-
 .socialbox{background:#fff;border:1px solid var(--ln);border-radius:var(--r);padding:26px;margin-top:20px;text-align:center}
 .socialbox h3{font-size:21px;color:var(--nvy);margin-bottom:6px}
 .socialbox p{margin:0 0 18px;color:var(--sub);font-weight:600;font-size:14.5px}
@@ -207,11 +312,6 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .social.tiktok{background:#111}
 .social.facebook{background:#1877F2}
 
-.topbar .redes a{gap:5px}
-.topbar .redes svg{width:13px;height:13px}
-footer .fred{display:flex;align-items:center;gap:8px;padding:5px 0}
-footer .fred svg{width:16px;height:16px;flex:none}
-
 /* ---------- footer ---------- */
 footer{background:var(--nvy);color:#B9C4EC;padding:38px 0 26px;font-size:14px}
 footer .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px}
@@ -221,11 +321,13 @@ footer a:hover{color:var(--yel)}
 footer .fbrand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 footer .fbrand img{width:44px;height:44px;border-radius:10px}
 footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
-.copy{border-top:1px solid rgba(255,255,255,.14);margin-top:26px;padding-top:16px;font-size:12.5px;color:#93A2DA;
+footer .fred{display:flex;align-items:center;gap:8px;padding:5px 0}
+footer .fred svg{width:16px;height:16px;flex:none}
+.copy2{border-top:1px solid rgba(255,255,255,.14);margin-top:26px;padding-top:16px;font-size:12.5px;color:#93A2DA;
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 /* ---------- whatsapp flotante ---------- */
-.fab{position:fixed;right:18px;bottom:18px;z-index:60;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.fab{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
 .fab a,.fab button{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;border:0;
   box-shadow:0 6px 20px rgba(0,0,0,.24);transition:transform .15s}
 .fab a:hover,.fab button:hover{transform:scale(1.07)}
@@ -253,19 +355,20 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
   footer .cols{grid-template-columns:1fr 1fr}
   .grupo{grid-template-columns:1fr;text-align:center;justify-items:center}
   .grupo img{width:165px;margin:0 auto}
+  .envcard{grid-template-columns:1fr;gap:6px}
 }
 @media(max-width:700px){
   .topbar{font-size:12px}
   .topbar .in{justify-content:space-between;gap:10px;min-height:32px}
-  .topbar .redes a:not(:first-child){display:none}
+  .topbar .redes a span{display:none}
   .hrow{flex-wrap:wrap;gap:9px;padding:9px 0}
   .search{order:3;width:100%;flex-basis:100%}
   .search input{padding:10px 38px 10px 40px;font-size:14px}
   .brand{flex:1;min-width:0}
   .brand b{font-size:16.5px}
   .brand img{width:38px;height:38px}
-  .hidesm{display:none}
-  .acts .btn{padding:11px 13px}
+  .brand span{display:none}
+  .burger,.icobtn{width:40px;height:40px}
   .cats{top:105px}
   .cats .in{padding-top:7px;padding-bottom:7px}
   .chip{padding:6px 13px;font-size:12.5px}
@@ -278,8 +381,12 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
   .hero-stats div b{font-size:22px}
   .hero-stats div span{font-size:11px}
   .grid{grid-template-columns:repeat(2,1fr);gap:12px}
-  .pb{padding:11px 11px 0}.pa{padding:9px 11px 12px}
+  .pb{padding:11px 11px 12px}
+  .cbtn{width:36px;height:36px}
   .nm{font-size:13.5px}.pr{font-size:19px}
+  .sello{min-width:40px;height:40px;font-size:12px}
+  .sello.tag{min-width:44px;height:44px;font-size:10.5px}
+  .heart{width:32px;height:32px}
   .sec{padding:32px 0}
   footer .cols{grid-template-columns:1fr}
   .fab a,.fab button{width:54px;height:54px}
@@ -290,7 +397,6 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
 
 <div class="warn" id="errBar" hidden></div>
 
-<!-- barra superior -->
 <div class="topbar"><div class="in">
   <a id="tbWa" href="#" target="_blank" rel="noopener">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.5.7.7-2.4-.2-.3A8 8 0 0 1 12 4zm-2.6 4c-.2 0-.5 0-.7.4l-.6 1.2c-.2.5 0 1.2.3 1.8.7 1.3 2 2.7 3.6 3.4 1.4.6 1.8.5 2.2.4.5-.1 1.2-.5 1.4-1 .2-.5.2-.9.1-1l-1.5-.7c-.2-.1-.4-.1-.6.1l-.6.7c-.1.2-.3.2-.5.1-1-.4-1.9-1.3-2.4-2.2-.1-.2 0-.4.1-.5l.5-.6c.1-.2.1-.3 0-.5l-.6-1.3c-.1-.3-.3-.3-.4-.3z"/></svg>
@@ -301,6 +407,9 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
 
 <header>
   <div class="in"><div class="hrow">
+    <button class="burger" onclick="abrirMenu()" aria-label="Menú">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
     <div class="brand" onclick="go('list')">
       <img src="logo.webp" alt="WarmaGames">
       <span>
@@ -316,14 +425,18 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
       <button class="clr" id="qclr" hidden aria-label="Limpiar">×</button>
     </div>
     <div class="acts">
+      <button class="icobtn wish" id="wishBtn" onclick="go('wish')" aria-label="Lista de deseos">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6A5.5 5.5 0 0 0 12 7a5.5 5.5 0 0 0-8.8 1.6c-1 2.4.2 5 4 8.3l4.8 4.2 4.8-4.2c3.8-3.3 5-5.9 4-8.3z"/></svg>
+        <span class="n" id="wishN" hidden>0</span>
+      </button>
+      <button class="icobtn" onclick="go('cart')" aria-label="Carrito">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.3a2 2 0 0 0 2-1.6L21 7H5"/></svg>
+        <span class="n" id="cartN" hidden>0</span>
+      </button>
       <a class="btn btn-wa" id="waTop" href="#" target="_blank" rel="noopener">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.5.7.7-2.4-.2-.3A8 8 0 0 1 12 4zm-2.6 4c-.2 0-.5 0-.7.4l-.6 1.2c-.2.5 0 1.2.3 1.8.7 1.3 2 2.7 3.6 3.4 1.4.6 1.8.5 2.2.4.5-.1 1.2-.5 1.4-1 .2-.5.2-.9.1-1l-1.5-.7c-.2-.1-.4-.1-.6.1l-.6.7c-.1.2-.3.2-.5.1-1-.4-1.9-1.3-2.4-2.2-.1-.2 0-.4.1-.5l.5-.6c.1-.2.1-.3 0-.5l-.6-1.3c-.1-.3-.3-.3-.4-.3z"/></svg>
         <span class="hidesm">WhatsApp</span>
       </a>
-      <button class="btn btn-nvy cartbtn" onclick="go('cart')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.3a2 2 0 0 0 2-1.6L21 7H5"/></svg>
-        <span class="hidesm">Carrito</span><span class="n" id="cartN" hidden>0</span>
-      </button>
     </div>
   </div></div>
 </header>
@@ -340,21 +453,35 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
         <p style="margin:0;max-width:330px">Juguetes para todas las edades: rompecabezas, juegos de mesa y accesorios. Envíos a todo Bolivia desde La Paz.</p>
       </div>
       <div>
-        <h4>Contacto</h4>
-        <a id="fWa" href="#" target="_blank" rel="noopener"></a>
+        <h4>Tienda</h4>
         <a href="#" onclick="go('list');return false">Ver catálogo</a>
+        <a href="#" onclick="setEsp('ofertas');return false">Ofertas</a>
+        <a href="#" onclick="go('wish');return false">Lista de deseos</a>
+        <a href="#" onclick="go('envios');return false">Envíos y entregas</a>
+        <a id="fWa" href="#" target="_blank" rel="noopener"></a>
       </div>
       <div>
         <h4>Síguenos</h4>
         <div id="fRedes"></div>
       </div>
     </div>
-    <div class="copy">
+    <div class="copy2">
       <span>© <span id="yr"></span> WarmaGames Bolivia</span>
       <span>Precios en bolivianos (Bs). Sujetos a disponibilidad.</span>
     </div>
   </div>
 </footer>
+
+<div class="ovl" id="ovl" onclick="cerrarMenu()"></div>
+<aside class="drawer" id="drawer" aria-label="Menú de navegación">
+  <div class="dhead">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="logo.webp" alt=""><b id="dBrand">WarmaGames</b>
+    </div>
+    <button class="dclose" onclick="cerrarMenu()" aria-label="Cerrar">×</button>
+  </div>
+  <div class="dbody" id="dbody"></div>
+</aside>
 
 <div class="fab">
   <button class="up" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Subir">
@@ -373,7 +500,8 @@ footer .fbrand b{font-family:var(--disp);color:#fff;font-size:19px}
 <script src="productos.js"></script>
 
 <script>
-let CART = {}, VIEW = 'list', CURRENT = null, CAT = '', LIMITE = 24, GAL = 0;
+let CART = {}, WISH = [], VIEW = 'list', CURRENT = null, CAT = '', MARCA = '', ESP = '', LIMITE = 24, GAL = 0;
+let DEP = '', PUNTO = '', COORD = null, MAPA = null;
 const PASO = 24;
 const $ = s => document.querySelector(s);
 const CFG = () => window.CONFIG || {};
@@ -384,6 +512,15 @@ const disponible = p => !/agotad/i.test(p.stock||'');
 const tienePrecio = p => p.precio !== '' && p.precio != null && !isNaN(Number(p.precio)) && Number(p.precio) > 0;
 const imgSrc = f => f ? 'fotos/' + f : '';
 const fotosDe = p => [p.imagen, ...String(p.imagenes||'').split('|')].filter(Boolean);
+
+/* ---------- ofertas y etiquetas ---------- */
+const antes = p => {
+  const a = Number(p.precio_antes);
+  return (p.precio_antes && !isNaN(a) && tienePrecio(p) && a > Number(p.precio)) ? a : 0;
+};
+const enOferta = p => antes(p) > 0;
+const pctDesc = p => enOferta(p) ? Math.round((1 - Number(p.precio)/antes(p)) * 100) : 0;
+const esNuevo = p => /nuev/i.test(p.etiqueta||'');
 
 /* ---------- emojis por categoría ---------- */
 const EMOJI = {
@@ -399,8 +536,7 @@ const ICO = {
   facebook:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.7-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg>'
 };
 function redes(){
-  const c = CFG();
-  const r = [];
+  const c = CFG(), r = [];
   if(c.INSTAGRAM) r.push({k:'instagram', n:'Instagram', u:'https://instagram.com/'+c.INSTAGRAM, h:'@'+c.INSTAGRAM});
   if(c.TIKTOK)    r.push({k:'tiktok',    n:'TikTok',    u:'https://tiktok.com/@'+c.TIKTOK,    h:'@'+c.TIKTOK});
   if(c.FACEBOOK)  r.push({k:'facebook',  n:'Facebook',  u:'https://facebook.com/'+c.FACEBOOK, h:'@'+c.FACEBOOK});
@@ -415,7 +551,8 @@ function normKey(k){
 }
 const SHEET_KEYS = {
   id:'id', nombre:'nombre', categoria:'categoria', marca:'marca', piezas:'piezas',
-  precio:'precio', preciobs:'precio', stock:'stock',
+  precio:'precio', preciobs:'precio', precioantes:'precio_antes', precioanterior:'precio_antes',
+  etiqueta:'etiqueta', sello:'etiqueta', stock:'stock',
   imagen:'imagen', imagenurl:'imagen', imagenarchivo:'imagen',
   imagenes:'imagenes', fotosextra:'imagenes',
   descripcion:'descripcion', mostrar:'mostrar', edad:'edad', tamano:'tamano'
@@ -463,19 +600,42 @@ async function cargarProductosSheet(){
   }
 }
 
-/* ---------- carrito ---------- */
+/* ---------- carrito y lista de deseos ---------- */
 function loadCart(){ try{ CART = JSON.parse(localStorage.getItem('wg_cart')||'{}') || {}; }catch(e){ CART = {}; } }
 function saveCart(){ try{ localStorage.setItem('wg_cart', JSON.stringify(CART)); }catch(e){} }
+function loadWish(){ try{ WISH = JSON.parse(localStorage.getItem('wg_wish')||'[]') || []; }catch(e){ WISH = []; } }
+function saveWish(){ try{ localStorage.setItem('wg_wish', JSON.stringify(WISH)); }catch(e){} }
 const cartCount = () => Object.values(CART).reduce((a,b)=>a+b,0);
 const cartLines = () => Object.entries(CART).map(([id,q])=>({p:PRODUCTOS().find(x=>x.id===id),q})).filter(x=>x.p);
 const cartTotal = () => cartLines().reduce((a,l)=>a + (tienePrecio(l.p)?Number(l.p.precio)*l.q:0), 0);
+const cartAhorro = () => cartLines().reduce((a,l)=>a + (enOferta(l.p)?(antes(l.p)-Number(l.p.precio))*l.q:0), 0);
+const wishProds = () => WISH.map(id=>PRODUCTOS().find(x=>x.id===id)).filter(Boolean);
+
 function add(id){ const p = PRODUCTOS().find(x=>x.id===id); if(!p||!disponible(p)) return;
-  CART[id]=(CART[id]||0)+1; saveCart(); flash('Agregado al carrito'); pintarBadge();
+  CART[id]=(CART[id]||0)+1; saveCart(); flash('Agregado al carrito 🛒'); pintarBadges();
   if(VIEW!=='list') render(); }
 function setQty(id,d){ CART[id]=(CART[id]||0)+d; if(CART[id]<=0) delete CART[id]; saveCart(); render(); }
 function rm(id){ delete CART[id]; saveCart(); render(); }
-function pintarBadge(){ const n=cartCount(), b=$('#cartN'); b.textContent=n; b.hidden = n===0; }
+function toggleWish(id, ev){
+  if(ev) ev.stopPropagation();
+  const i = WISH.indexOf(id);
+  if(i>=0){ WISH.splice(i,1); flash('Quitado de tu lista'); }
+  else { WISH.push(id); flash('Guardado en tu lista ❤️'); }
+  saveWish(); pintarBadges();
+  if(VIEW==='wish') render();
+  else document.querySelectorAll('.heart[data-id="'+id+'"]').forEach(b=>b.classList.toggle('on', WISH.includes(id)));
+}
+function pintarBadges(){
+  const n=cartCount(), b=$('#cartN'); b.textContent=n; b.hidden = n===0;
+  const w=WISH.length, wb=$('#wishN'); wb.textContent=w; wb.hidden = w===0;
+  $('#wishBtn').classList.toggle('on', w>0);
+}
 
+function copiar(txt){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>flash('Copiado: '+txt), ()=>flash('No se pudo copiar'));
+  } else { flash('Copia manualmente: '+txt); }
+}
 function flash(msg){
   let el = $('#flash');
   if(!el){ el=document.createElement('div'); el.id='flash'; el.className='toast'; document.body.appendChild(el); }
@@ -483,24 +643,50 @@ function flash(msg){
   clearTimeout(el._t); el._t = setTimeout(()=>{ el.hidden = true; }, 1700);
 }
 
+/* ---------- envíos ---------- */
+function envios(){ return CFG().ENVIOS || {}; }
+function envioDe(dep){ return envios()[dep] || null; }
+
 /* ---------- WhatsApp ---------- */
 function waPedido(){
   const l = cartLines();
   let t = '¡Hola '+(CFG().TIENDA||'')+'! 👋 Quiero hacer este pedido:\n\n';
   l.forEach(x=>{ t += '🧩 '+x.q+' × '+x.p.nombre + (tienePrecio(x.p)?' — '+money(Number(x.p.precio)*x.q):' — precio a confirmar') + '\n'; });
-  t += '\n💰 Total: '+money(cartTotal())+'\n\n✅ Ya realicé el pago y envío el comprobante.';
+  t += '\n💰 Total: '+money(cartTotal());
+  if(cartAhorro()>0) t += '\n🏷️ Ahorro por ofertas: '+money(cartAhorro());
+  if(DEP){
+    const e = envioDe(DEP);
+    t += '\n\n📍 Departamento: '+DEP;
+    if(e) t += '\n🚚 Entrega: '+e.modo;
+    if(PUNTO.trim()) t += '\n📌 Punto de entrega: '+PUNTO.trim();
+  }
+  if(COORD) t += '\n🗺️ Mi ubicación: https://maps.google.com/?q='+COORD[0].toFixed(6)+','+COORD[1].toFixed(6);
+  t += '\n\n✅ Ya realicé el pago y envío el comprobante.';
   return 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(t);
 }
 function waProducto(p){
   return 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(
     '¡Hola '+(CFG().TIENDA||'')+'! 👋 Quiero consultar por: '+p.nombre+(p.piezas?' ('+p.piezas+' piezas)':'')+' 🧩 ¿Está disponible?');
 }
+function waLista(){
+  const l = wishProds();
+  let t = '¡Hola '+(CFG().TIENDA||'')+'! 👋 Esta es mi lista de deseos:\n\n';
+  l.forEach(p=>{ t += '❤️ '+p.nombre + (tienePrecio(p)?' — '+money(p.precio):'') + '\n'; });
+  t += '\n¿Me confirman disponibilidad y precios? 🙌';
+  return 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(t);
+}
 
 /* ---------- navegación ---------- */
-function go(v,id){ VIEW=v; if(id) CURRENT=id; GAL=0; if(v==='list'&&!id) LIMITE=Math.max(LIMITE,PASO); window.scrollTo(0,0); render(); }
-function setCat(c){ CAT = c; LIMITE = PASO; VIEW='list'; render();
-  const cont = document.getElementById('catalogo'); if(cont) cont.scrollIntoView({block:'start'}); }
+function go(v,id){ VIEW=v; if(id) CURRENT=id; GAL=0; cerrarMenu(); window.scrollTo(0,0); render(); }
+function setCat(c){ CAT=c; MARCA=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); }
+function setMarca(m){ MARCA=m; CAT=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); }
+function setEsp(e){ ESP=e; CAT=''; MARCA=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); }
+function limpiar(){ CAT=''; MARCA=''; ESP=''; $('#q').value=''; $('#qclr').hidden=true; LIMITE=PASO; VIEW='list'; render(); }
 function verMas(){ LIMITE += PASO; render(); }
+function irCatalogo(){ const c=document.getElementById('catalogo'); if(c) c.scrollIntoView({block:'start'}); }
+
+function abrirMenu(){ pintarMenu(); $('#drawer').classList.add('open'); $('#ovl').classList.add('open'); document.body.classList.add('lock'); }
+function cerrarMenu(){ $('#drawer').classList.remove('open'); $('#ovl').classList.remove('open'); document.body.classList.remove('lock'); }
 
 function imgTag(file, alt, cls){
   const src = imgSrc(file);
@@ -509,28 +695,54 @@ function imgTag(file, alt, cls){
     : `<div class="noimg">Sin foto</div>`;
 }
 
+function visibles(){ return PRODUCTOS().filter(p => (p.mostrar||'Si').toLowerCase() !== 'no'); }
 function filtrados(){
   const q = ($('#q').value||'').trim().toLowerCase();
-  return PRODUCTOS().filter(p =>
-    (p.mostrar||'Si').toLowerCase() !== 'no' &&
+  return visibles().filter(p =>
     (!CAT || p.categoria===CAT) &&
-    (!q || (p.nombre+' '+p.marca+' '+p.categoria+' '+p.piezas+' '+(p.descripcion||'')).toLowerCase().includes(q)));
+    (!MARCA || p.marca===MARCA) &&
+    (ESP!=='ofertas' || enOferta(p)) &&
+    (ESP!=='nuevos' || esNuevo(p)) &&
+    (ESP!=='agotados' || !disponible(p)) &&
+    (!q || (p.nombre+' '+p.marca+' '+p.categoria+' '+p.piezas+' '+(p.descripcion||'')+' '+(p.etiqueta||'')).toLowerCase().includes(q)));
 }
 
 function tarjeta(p){
+  const of = enOferta(p), fav = WISH.includes(p.id);
+  const bdgs = [];
+  if(!disponible(p)) bdgs.push(`<span class="bdg ago">Agotado</span>`);
+  if(of) bdgs.push(`<span class="bdg desc">-${pctDesc(p)}%</span>`);
+  if(p.etiqueta) bdgs.push(`<span class="bdg ${esNuevo(p)?'nue':'tag'}">${esc(p.etiqueta)}</span>`);
   return `<article class="pc">
+    <button class="heart ${fav?'on':''}" data-id="${esc(p.id)}" onclick="toggleWish('${esc(p.id)}',event)"
+      aria-label="Guardar en mi lista" title="Guardar en mi lista">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="${fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6A5.5 5.5 0 0 0 12 7a5.5 5.5 0 0 0-8.8 1.6c-1 2.4.2 5 4 8.3l4.8 4.2 4.8-4.2c3.8-3.3 5-5.9 4-8.3z"/></svg>
+    </button>
     <div class="im" onclick="go('detail','${esc(p.id)}')">${imgTag(p.imagen, p.nombre)}
-      ${disponible(p)?'':'<div class="out"><span>Agotado</span></div>'}</div>
+      ${disponible(p)?'':'<div class="out"></div>'}</div>
+    ${bdgs.length?`<div class="badges">${bdgs.join('')}</div>`:''}
     <div class="pb">
       ${p.marca?`<span class="mk">${esc(p.marca)}</span>`:'<span class="mk">&nbsp;</span>'}
       <h3 class="nm" onclick="go('detail','${esc(p.id)}')">${esc(p.nombre)}</h3>
       ${p.piezas?`<span class="pz">${esc(p.piezas)} piezas</span>`:'<span class="pz">&nbsp;</span>'}
-      <span class="pr">${tienePrecio(p)?money(p.precio):'<small>Consultar</small>'}</span>
-    </div>
-    <div class="pa">
-      ${disponible(p) && tienePrecio(p)
-        ? `<button class="btn btn-nvy" onclick="add('${esc(p.id)}')">Agregar</button>`
-        : `<a class="btn btn-wa" href="${waProducto(p)}" target="_blank" rel="noopener">Consultar</a>`}
+      <div class="prow">
+        <span class="prw">
+          ${of?`<span class="prv">${money(antes(p))}</span>`:''}
+          <span class="pr ${of?'of':''}">${tienePrecio(p)?money(p.precio):'<small>Consultar</small>'}</span>
+        </span>
+        <div class="pact">
+          ${disponible(p) && tienePrecio(p)
+            ? `<button class="cbtn add" onclick="add('${esc(p.id)}')" title="Agregar al carrito" aria-label="Agregar al carrito">
+                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.3a2 2 0 0 0 2-1.6L21 7H5"/></svg>
+               </button>`
+            : ''}
+          <a class="cbtn wa" href="${waProducto(p)}" target="_blank" rel="noopener"
+             title="${disponible(p)?'Consultar por WhatsApp':'Avísenme cuando llegue'}"
+             aria-label="Consultar por WhatsApp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.5.7.7-2.4-.2-.3A8 8 0 0 1 12 4zm-2.6 4c-.2 0-.5 0-.7.4l-.6 1.2c-.2.5 0 1.2.3 1.8.7 1.3 2 2.7 3.6 3.4 1.4.6 1.8.5 2.2.4.5-.1 1.2-.5 1.4-1 .2-.5.2-.9.1-1l-1.5-.7c-.2-.1-.4-.1-.6.1l-.6.7c-.1.2-.3.2-.5.1-1-.4-1.9-1.3-2.4-2.2-.1-.2 0-.4.1-.5l.5-.6c.1-.2.1-.3 0-.5l-.6-1.3c-.1-.3-.3-.3-.4-.3z"/></svg>
+          </a>
+        </div>
+      </div>
     </div>
   </article>`;
 }
@@ -538,28 +750,48 @@ function tarjeta(p){
 function vistaLista(){
   const list = filtrados();
   const q = ($('#q').value||'').trim();
-  const visibles = list.slice(0, LIMITE);
-  const hero = (q || CAT) ? '' : heroHTML();
-  const titulo = q ? `Resultados para “${esc(q)}”` : (CAT || 'Todo el catálogo');
+  const vis = list.slice(0, LIMITE);
+  const filtrando = q || CAT || MARCA || ESP;
+  const hero = filtrando ? '' : heroHTML();
+  let titulo = 'Todo el catálogo';
+  if(q) titulo = 'Resultados para “'+q+'”';
+  else if(ESP==='ofertas') titulo = 'Ofertas';
+  else if(ESP==='nuevos') titulo = 'Novedades';
+  else if(ESP==='agotados') titulo = 'Agotados';
+  else if(CAT) titulo = CAT;
+  else if(MARCA) titulo = MARCA;
   return `${hero}
+  ${filtrando?'':destacadosHTML()}
   <section class="sec in" id="catalogo">
     <div class="sec-h">
       <div>
-        <h2>${q ? '🔎 ' : (CAT ? emo(CAT)+' ' : '🧩 ')}${esc(titulo)}</h2>
-        <p>${list.length} producto${list.length===1?'':'s'}${(CAT||q)?' · <a href="#" onclick="limpiar();return false">ver todo</a>':''}</p>
+        <h2>${esc(titulo)}</h2>
+        <p>${list.length} producto${list.length===1?'':'s'}${filtrando?' · <a href="#" onclick="limpiar();return false">ver todo</a>':''}</p>
       </div>
     </div>
     ${list.length
-      ? `<div class="grid">${visibles.map(tarjeta).join('')}</div>
+      ? `<div class="grid">${vis.map(tarjeta).join('')}</div>
          ${list.length > LIMITE ? `<div class="more"><button class="btn btn-out" onclick="verMas()">Ver más productos (${list.length - LIMITE} restantes)</button></div>` : ''}`
       : `<p class="empty">No encontramos productos con esa búsqueda.<br>Prueba con otra palabra o <a href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">escríbenos por WhatsApp</a>.</p>`}
   </section>
-  ${(q || CAT) ? '' : infoHTML()}`;
+  ${filtrando ? '' : infoHTML()}`;
+}
+
+function destacadosHTML(){
+  const ofertas = visibles().filter(enOferta).slice(0,4);
+  if(!ofertas.length) return '';
+  return `<section class="sec in">
+    <div class="sec-h">
+      <div><h2>Ofertas de la semana</h2><p>Precios rebajados por tiempo limitado</p></div>
+      <button class="btn btn-out" onclick="setEsp('ofertas')">Ver todas</button>
+    </div>
+    <div class="grid">${ofertas.map(tarjeta).join('')}</div>
+  </section>`;
 }
 
 function heroHTML(){
   const foto = CFG().HERO_FOTO ? imgSrc(CFG().HERO_FOTO) : 'hero.jpg';
-  const total = PRODUCTOS().filter(p=>(p.mostrar||'Si').toLowerCase()!=='no').length;
+  const total = visibles().length;
   const marcas = new Set(PRODUCTOS().map(p=>p.marca).filter(Boolean)).size;
   return `<section class="hero">
     <div class="bg" style="background-image:url('${esc(foto)}')"></div>
@@ -570,12 +802,12 @@ function heroHTML(){
       <p class="sub">Juguetes para todas las edades. Envíos a todo Bolivia. Elige, arma tu pedido y te lo confirmamos por WhatsApp.</p>
       <div class="hero-cta">
         <a class="btn btn-yel" href="#catalogo">🧩 Ver el catálogo</a>
-        <a class="btn btn-wa" id="heroWa" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">💬 Pedir por WhatsApp</a>
+        <a class="btn btn-wa" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">💬 Pedir por WhatsApp</a>
       </div>
       <div class="hero-stats">
         <div><b>${total}</b><span>productos disponibles</span></div>
         <div><b>${marcas||1}</b><span>marcas</span></div>
-        <div><b>Bs</b><span>precios en bolivianos</span></div>
+        <div><b>9</b><span>departamentos con envío</span></div>
       </div>
     </div>
     <div class="hero-art"><img src="${esc(CFG().HERO_ARTE||'warma-art.jpg')}" alt="WarmaGames · juegos y rompecabezas"></div>
@@ -587,13 +819,14 @@ function infoHTML(){
   const qr = CFG().QR_GRUPO ? imgSrc(CFG().QR_GRUPO) : '';
   const wa = CFG().WHATSAPP ? 'https://wa.me/'+CFG().WHATSAPP : '#';
   return `<section class="info"><div class="in sec">
-    <div class="sec-h"><div><h2>😺 ¿Quiénes somos?</h2>
+    <div class="sec-h"><div><h2>¿Quiénes somos?</h2>
       <p>Una tienda boliviana de rompecabezas y juegos de mesa</p></div></div>
     <div class="cards3">
       <div class="card3">
         <div class="ico">🚚</div>
         <h3>Envíos a todo Bolivia</h3>
-        <p>Atendemos por WhatsApp y coordinamos entrega en La Paz o envío a tu ciudad.</p>
+        <p>Entrega en moto en La Paz y envío por flota a los demás departamentos.
+          <a href="#" onclick="go('envios');return false">Ver detalles</a></p>
       </div>
       <div class="card3">
         <div class="ico">🧩</div>
@@ -630,8 +863,8 @@ function infoHTML(){
 function vistaDetalle(){
   const p = PRODUCTOS().find(x=>x.id===CURRENT);
   if(!p) return vistaLista();
-  const fotos = fotosDe(p);
-  const principal = fotos[GAL] || fotos[0];
+  const fotos = fotosDe(p), principal = fotos[GAL] || fotos[0];
+  const of = enOferta(p), fav = WISH.includes(p.id);
   return `<div class="in">
   <button class="back" onclick="go('list')">← Volver al catálogo</button>
   <div class="detail">
@@ -643,7 +876,16 @@ function vistaDetalle(){
     <div>
       ${p.marca?`<span class="mk">${esc(p.marca)}</span>`:''}
       <h2>${esc(p.nombre)}</h2>
-      <div class="big">${tienePrecio(p)?money(p.precio):'Precio a consultar'}</div>
+      ${(of||p.etiqueta||!disponible(p))?`<div class="dbadges">
+        ${!disponible(p)?`<span class="bdg ago">Agotado</span>`:''}
+        ${of?`<span class="bdg desc">-${pctDesc(p)}%</span>`:''}
+        ${p.etiqueta?`<span class="bdg ${esNuevo(p)?'nue':'tag'}">${esc(p.etiqueta)}</span>`:''}
+      </div>`:''}
+      <div class="dprice">
+        <span class="big ${of?'of':''}">${tienePrecio(p)?money(p.precio):'Precio a consultar'}</span>
+        ${of?`<span class="bigv">${money(antes(p))}</span>
+              <span class="ahorro">Ahorras ${money(antes(p)-Number(p.precio))} (-${pctDesc(p)}%)</span>`:''}
+      </div>
       <p class="stk ${disponible(p)?'ok':'no'}">${disponible(p)?'✓ ':''}${esc(p.stock||'Disponible')}</p>
       ${p.descripcion?`<p class="desc">${esc(p.descripcion)}</p>`:''}
       <table class="spec">
@@ -658,6 +900,7 @@ function vistaDetalle(){
         ${disponible(p) && tienePrecio(p)
           ? `<button class="btn btn-nvy" onclick="add('${esc(p.id)}')">Agregar al carrito</button>`:''}
         <a class="btn btn-wa" href="${waProducto(p)}" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+        <button class="btn btn-out" onclick="toggleWish('${esc(p.id)}')">${fav?'❤️ En mi lista':'🤍 Guardar en mi lista'}</button>
       </div>
     </div>
   </div>
@@ -666,13 +909,55 @@ function vistaDetalle(){
 }
 
 function relacionadosHTML(p){
-  const rel = PRODUCTOS().filter(x => x.id!==p.id && x.categoria===p.categoria &&
-    (x.mostrar||'Si').toLowerCase()!=='no').slice(0,4);
+  const rel = visibles().filter(x => x.id!==p.id && x.categoria===p.categoria).slice(0,4);
   if(!rel.length) return '';
   return `<section class="sec">
     <div class="sec-h"><div><h2>También te puede gustar</h2></div></div>
     <div class="grid">${rel.map(tarjeta).join('')}</div>
   </section>`;
+}
+
+function vistaWish(){
+  const l = wishProds();
+  if(!l.length) return `<div class="in">
+    <button class="back" onclick="go('list')">← Volver al catálogo</button>
+    <p class="empty">Tu lista de deseos está vacía.<br><br>
+      Toca el corazón 🤍 de cualquier producto para guardarlo aquí y pedirlo después.<br><br>
+      <button class="btn btn-nvy" onclick="go('list')">Ver el catálogo</button></p></div>`;
+  return `<div class="in">
+    <button class="back" onclick="go('list')">← Volver al catálogo</button>
+    <section class="sec" style="padding-top:8px">
+      <div class="sec-h">
+        <div><h2>Mi lista de deseos</h2>
+          <p>${l.length} producto${l.length===1?'':'s'} guardado${l.length===1?'':'s'} en este dispositivo</p></div>
+        <a class="btn btn-wa" href="${waLista()}" target="_blank" rel="noopener">💬 Enviar mi lista por WhatsApp</a>
+      </div>
+      <div class="grid">${l.map(tarjeta).join('')}</div>
+    </section>
+  </div>`;
+}
+
+function vistaEnvios(){
+  const e = envios();
+  const deps = Object.keys(e);
+  return `<div class="in">
+    <button class="back" onclick="go('list')">← Volver al catálogo</button>
+    <section class="sec" style="padding-top:8px">
+      <div class="sec-h"><div><h2>Envíos y entregas</h2>
+        <p>Cómo llega tu pedido según tu departamento</p></div></div>
+      <div class="envtabla">
+        ${deps.map(d=>`<div class="envcard">
+          <div class="dep">${esc(d)}</div>
+          <div>
+            <div class="mod">${esc(e[d].modo||'')}</div>
+            <div class="det">${esc(e[d].detalle||'')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <p class="mapnote" style="margin-top:16px">${esc(CFG().ENVIO_NOTA||'')}</p>
+      <a class="btn btn-wa" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">💬 Consultar costo de envío</a>
+    </section>
+  </div>`;
 }
 
 function vistaCarrito(){
@@ -685,7 +970,7 @@ function vistaCarrito(){
     <div class="ci">
       <div class="th">${imgTag(x.p.imagen, x.p.nombre)}</div>
       <div class="info"><b>${esc(x.p.nombre)}</b>
-        <small>${tienePrecio(x.p)?money(x.p.precio)+' c/u':'precio a confirmar'}</small>
+        <small>${tienePrecio(x.p)?money(x.p.precio)+' c/u':'precio a confirmar'}${enOferta(x.p)?' · <span style="color:#A3231A">antes '+money(antes(x.p))+'</span>':''}</small>
         <button class="rm" onclick="rm('${esc(x.p.id)}')">Quitar</button></div>
       <div class="qty">
         <button onclick="setQty('${esc(x.p.id)}',-1)" aria-label="Menos">−</button>
@@ -693,50 +978,205 @@ function vistaCarrito(){
         <button onclick="setQty('${esc(x.p.id)}',1)" aria-label="Más">+</button>
       </div>
     </div>`).join('');
+
+  const e = DEP ? envioDe(DEP) : null;
+  const deps = Object.keys(envios());
+  const envHTML = `<div class="box">
+    <h3>¿A dónde enviamos?</h3>
+    <p>Elige tu departamento para ver cómo llega tu pedido.</p>
+    <div class="field">
+      <label for="dep">Departamento</label>
+      <select id="dep" onchange="setDep(this.value)">
+        <option value="">Selecciona tu departamento…</option>
+        ${deps.map(d=>`<option value="${esc(d)}" ${DEP===d?'selected':''}>${esc(d)}</option>`).join('')}
+      </select>
+    </div>
+    ${e?`<div class="envinfo">
+        <b>${esc(e.modo||'')}</b>
+        <span>${esc(e.detalle||'')}</span>
+      </div>`:''}
+    ${e?`<div class="field">
+      <label for="punto">${e.mapa ? '¿A qué dirección lo enviamos?' : '¿Dónde quieres el punto de entrega?'}</label>
+      <input id="punto" type="text" value="${esc(PUNTO)}" oninput="PUNTO=this.value;actualizarWA()"
+        placeholder="${e.mapa ? 'Zona, calle, número y una referencia' : 'Terminal, oficina de la flota o la dirección que prefieras'}">
+    </div>`:''}
+    ${e && e.mapa ? `
+      <div id="mapa"></div>
+      <p class="mapnote">📍 Toca el mapa para marcar tu ubicación exacta. Se enviará junto a tu pedido por WhatsApp.
+        ${COORD?'<br><b style="color:#136B37">Ubicación marcada ✓</b>':''}</p>
+    ` : ''}
+  </div>`;
+
   const qrFile = CFG().QR_ARCHIVO;
   const qr = qrFile
     ? `<img src="${esc(imgSrc(qrFile))}" alt="QR de pago"
          onerror="this.parentNode.innerHTML='Falta subir la imagen del QR de pago a la carpeta /fotos'">`
     : 'Aquí va la imagen del QR de pago<br>(se configura en config.js)';
+  const tit = (CFG().PAGO_TITULAR||'').trim();
+  const cta = (CFG().PAGO_CUENTA||'').trim();
+  const bco = (CFG().PAGO_BANCO||'').trim();
+  const hayBanco = tit || cta || bco;
+  const bancoHTML = hayBanco ? `
+    <div class="bank">
+      <h4>🏦 Datos para el pago</h4>
+      ${tit?`<div class="brow"><span>Titular</span><b>${esc(tit)}</b></div>`:''}
+      ${cta?`<div class="brow"><span>Cuenta</span><b>${esc(cta)}</b>
+          <button class="copy" onclick="copiar('${esc(cta)}')">Copiar</button></div>`:''}
+      ${bco?`<div class="brow"><span>Banco</span><b>${esc(bco)}</b></div>`:''}
+    </div>` : '';
+  const pasoBanco = hayBanco
+    ? `<li>🏦 O realiza el pago a <b>${esc(tit)}</b>${cta?`, cuenta <b>${esc(cta)}</b>`:''}${bco?` del <b>${esc(bco)}</b>`:''}.</li>`
+    : '';
+
   return `<div class="in"><button class="back" onclick="go('list')">← Seguir viendo el catálogo</button>
   <div class="cart">
-    <h1 style="font-size:28px;color:var(--nvy);margin:10px 0 6px">Tu pedido</h1>
+    <h1 style="font-size:28px;color:var(--nvy);margin:10px 0 6px;font-family:var(--disp)">Tu pedido</h1>
     ${items}
     <div class="tot"><span>Total</span><b>${money(cartTotal())}</b></div>
-    <div class="pay">
+    ${cartAhorro()>0?`<div class="ahorro-tot">🏷️ Estás ahorrando ${money(cartAhorro())} con las ofertas</div>`:''}
+    ${envHTML}
+    <div class="box pay">
       <h3>${esc(CFG().QR_TITULO||'Paga escaneando el QR')}</h3>
       <p>${esc(CFG().QR_NOTA||'')}</p>
       <div class="qr">${qr}</div>
+      ${bancoHTML}
       <ol class="steps">
         <li>📱 Escanea el QR con la app de tu banco y paga <b>${money(cartTotal())}</b>.</li>
+        ${pasoBanco}
         <li>📸 Toma una captura del comprobante.</li>
         <li>💬 Toca el botón verde: se abre WhatsApp con tu pedido ya escrito.</li>
         <li>📤 Envía el mensaje y adjunta la captura del comprobante.</li>
       </ol>
-      <a class="btn btn-wa" style="padding:15px 24px;font-size:15.5px" href="${waPedido()}" target="_blank" rel="noopener">
+      <a class="btn btn-wa" id="waPedidoBtn" style="padding:15px 24px;font-size:15.5px" href="${waPedido()}" target="_blank" rel="noopener">
         💬 Enviar pedido por WhatsApp</a>
     </div>
   </div></div>`;
 }
 
-function limpiar(){ CAT=''; $('#q').value=''; $('#qclr').hidden = true; LIMITE=PASO; render(); pintarChips(); }
+/* ---------- departamento y mapa ---------- */
+function actualizarWA(){
+  const a = document.getElementById('waPedidoBtn');
+  if(a) a.href = waPedido();
+}
+function setDep(d){
+  DEP = d; COORD = null; MAPA = null; PUNTO = '';
+  try{ localStorage.setItem('wg_dep', d); }catch(e){}
+  render();
+  const e = envioDe(d);
+  if(e && e.mapa) cargarMapa();
+}
+function cargarMapa(){
+  const cont = document.getElementById('mapa');
+  if(!cont) return;
+  const iniciar = () => {
+    if(!window.L || !document.getElementById('mapa')) return;
+    const base = (CFG().MAPA_CENTRO||[-16.4955,-68.1336]);
+    MAPA = L.map('mapa').setView(base, 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(MAPA);
+    let mk = null;
+    MAPA.on('click', ev => {
+      COORD = [ev.latlng.lat, ev.latlng.lng];
+      if(mk) MAPA.removeLayer(mk);
+      mk = L.marker(COORD).addTo(MAPA);
+      const nota = document.querySelector('.mapnote');
+      if(nota && !nota.querySelector('b')) nota.insertAdjacentHTML('beforeend','<br><b style="color:#136B37">Ubicación marcada ✓</b>');
+      actualizarWA();
+      flash('Ubicación marcada 📍');
+    });
+    setTimeout(()=>MAPA.invalidateSize(), 200);
+  };
+  if(window.L){ iniciar(); return; }
+  if(!document.getElementById('leafletCss')){
+    const c = document.createElement('link');
+    c.id='leafletCss'; c.rel='stylesheet';
+    c.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    document.head.appendChild(c);
+  }
+  if(!document.getElementById('leafletJs')){
+    const s = document.createElement('script');
+    s.id='leafletJs';
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    s.onload = iniciar;
+    s.onerror = () => {
+      const c = document.getElementById('mapa');
+      if(!c) return;
+      const nota = c.nextElementSibling;
+      if(nota && nota.classList.contains('mapnote')) nota.remove();
+      c.outerHTML = '<p class="mapnote">📎 Cuando envíes tu pedido por WhatsApp, comparte tu ubicación con el clip → Ubicación, así el motorizado llega directo.</p>';
+    };
+    document.head.appendChild(s);
+  } else { iniciar(); }
+}
+
+/* ---------- menú lateral ---------- */
+function pintarMenu(){
+  const cats = [...new Set(visibles().map(p=>p.categoria).filter(Boolean))].sort();
+  const marcas = [...new Set(visibles().map(p=>p.marca).filter(Boolean))].sort();
+  const nOf = visibles().filter(enOferta).length;
+  const nNu = visibles().filter(esNuevo).length;
+  const nAg = visibles().filter(p=>!disponible(p)).length;
+  const cuenta = (key, val) => visibles().filter(p=>p[key]===val).length;
+  $('#dbody').innerHTML = `
+    <div class="dgroup">Catálogo</div>
+    <button class="dlink" onclick="limpiar();cerrarMenu()">Todos los productos
+      <span class="ct">${visibles().length}</span></button>
+    ${nOf?`<button class="dlink hot" onclick="setEsp('ofertas')">Ofertas
+      <span class="ct">${nOf}</span></button>`:''}
+    ${nNu?`<button class="dlink" onclick="setEsp('nuevos')">Novedades
+      <span class="ct">${nNu}</span></button>`:''}
+    ${nAg?`<button class="dlink" onclick="setEsp('agotados')">Agotados
+      <span class="ct">${nAg}</span></button>`:''}
+    <details class="dsec" open><summary>Categorías</summary>
+      <div class="dsub">
+        ${cats.map(c=>`<button class="${CAT===c?'on':''}" onclick="setCat('${esc(c)}')">${esc(c)}<span class="ct">${cuenta('categoria',c)}</span></button>`).join('')}
+      </div>
+    </details>
+    <details class="dsec"><summary>Marcas</summary>
+      <div class="dsub">
+        ${marcas.map(m=>`<button class="${MARCA===m?'on':''}" onclick="setMarca('${esc(m)}')">${esc(m)}<span class="ct">${cuenta('marca',m)}</span></button>`).join('')}
+      </div>
+    </details>
+    <div class="dgroup">Mi cuenta</div>
+    <button class="dlink" onclick="go('wish')">Lista de deseos
+      ${WISH.length?`<span class="ct">${WISH.length}</span>`:''}</button>
+    <button class="dlink" onclick="go('cart')">Carrito
+      ${cartCount()?`<span class="ct">${cartCount()}</span>`:''}</button>
+    <div class="dgroup">Información</div>
+    <button class="dlink" onclick="go('envios')">Envíos y entregas</button>
+    <a class="dlink" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">Contacto por WhatsApp</a>
+    ${redes().length?`<div class="dgroup">Síguenos</div>
+      ${redes().map(r=>`<a class="dlink" href="${esc(r.u)}" target="_blank" rel="noopener">${r.n}</a>`).join('')}`:''}
+  `;
+}
 
 function pintarChips(){
-  const cats = [...new Set(PRODUCTOS().map(p=>p.categoria).filter(Boolean))].sort();
+  const cats = [...new Set(visibles().map(p=>p.categoria).filter(Boolean))].sort();
   if(!cats.length) return;
+  const nOf = visibles().filter(enOferta).length;
+  const nAg = visibles().filter(p=>!disponible(p)).length;
   $('#catsBar').hidden = false;
-  $('#catsIn').innerHTML = [`<button class="chip ${CAT===''?'on':''}" onclick="setCat('')">✨ Todo</button>`]
-    .concat(cats.map(c=>`<button class="chip ${CAT===c?'on':''}" onclick="setCat('${esc(c)}')">${emo(c)} ${esc(c)}</button>`)).join('');
+  const partes = [`<button class="chip ${!CAT&&!MARCA&&!ESP?'on':''}" onclick="limpiar()">Todo</button>`];
+  if(nOf) partes.push(`<button class="chip of ${ESP==='ofertas'?'on':''}" onclick="setEsp('ofertas')">Ofertas (${nOf})</button>`);
+  cats.forEach(c=>partes.push(`<button class="chip ${CAT===c?'on':''}" onclick="setCat('${esc(c)}')">${esc(c)}</button>`));
+  if(nAg) partes.push(`<button class="chip ago ${ESP==='agotados'?'on':''}" onclick="setEsp('agotados')">Agotados (${nAg})</button>`);
+  $('#catsIn').innerHTML = partes.join('');
 }
 
 function render(){
-  $('#app').innerHTML = VIEW==='detail' ? vistaDetalle() : VIEW==='cart' ? vistaCarrito() : vistaLista();
+  $('#app').innerHTML =
+    VIEW==='detail' ? vistaDetalle() :
+    VIEW==='cart'   ? vistaCarrito() :
+    VIEW==='wish'   ? vistaWish() :
+    VIEW==='envios' ? vistaEnvios() : vistaLista();
   $('#catsBar').hidden = VIEW!=='list';
-  pintarBadge(); pintarChips();
+  pintarBadges(); if(VIEW==='list') pintarChips();
+  if(VIEW==='cart' && DEP){ const e=envioDe(DEP); if(e && e.mapa) cargarMapa(); }
 }
 
 async function init(){
-  loadCart();
+  loadCart(); loadWish();
+  try{ DEP = localStorage.getItem('wg_dep') || ''; }catch(e){}
   if(!window.CONFIG){
     const b = $('#errBar'); b.hidden=false;
     b.textContent = 'No se pudo cargar config.js — revisa que el archivo exista y no tenga errores.';
@@ -751,6 +1191,8 @@ async function init(){
     const b = $('#errBar'); b.hidden=false;
     b.textContent = 'No hay productos cargados — revisa productos.js o el Google Sheet en config.js.';
   }
+  if(DEP && !envioDe(DEP)) DEP = '';
+
   const wa = CFG().WHATSAPP ? 'https://wa.me/'+CFG().WHATSAPP : '#';
   const visible = (CFG().WHATSAPP||'').replace(/^591/,'');
   ['#waTop','#waFab','#tbWa','#fWa'].forEach(s=>{ const el=$(s); if(el) el.href = wa; });
@@ -763,16 +1205,18 @@ async function init(){
   const tienda = CFG().TIENDA || 'WarmaGames';
   $('#hNombre').textContent = tienda;
   $('#fBrand').textContent = tienda;
+  $('#dBrand').textContent = tienda;
   $('#yr').textContent = new Date().getFullYear();
   document.title = tienda + ' Bolivia · Rompecabezas y Juegos de Mesa';
 
   $('#q').addEventListener('input', ()=>{
     $('#qclr').hidden = !$('#q').value;
-    LIMITE = PASO;
-    if(VIEW!=='list'){ VIEW='list'; }
+    LIMITE = PASO; CAT=''; MARCA=''; ESP='';
+    if(VIEW!=='list') VIEW='list';
     render();
   });
   $('#qclr').addEventListener('click', ()=>{ $('#q').value=''; $('#qclr').hidden=true; LIMITE=PASO; render(); $('#q').focus(); });
+  document.addEventListener('keydown', ev=>{ if(ev.key==='Escape') cerrarMenu(); });
   render();
 }
 init();

@@ -90,6 +90,88 @@ window.CONFIG = {
   QR_NOTA: "Escanea el código con la app de tu banco y envía la captura del comprobante por WhatsApp.",
 
   // ---------------------------------------------------------------
+  // ENVÍOS POR DEPARTAMENTO
+  // ---------------------------------------------------------------
+  // Cada departamento tiene:
+  //   modo ..... cómo llega el pedido (texto corto, en azul)
+  //   detalle .. explicación para el cliente
+  //   mapa ..... true solo donde se entrega a domicilio; muestra el
+  //              mapa para que el cliente marque su dirección.
+  //
+  // El cliente escribe él mismo dónde quiere recibir el pedido, en un
+  // campo del carrito, y ese dato viaja en el mensaje de WhatsApp.
+  //
+  // Para quitar un departamento, borra su bloque completo.
+  ENVIOS: {
+    "La Paz": {
+      modo: "Entrega a domicilio en moto",
+      detalle: "Coordinamos la entrega el mismo día en La Paz y El Alto por Yango o InDrive. El costo del envío lo cubre el cliente y se paga al recibir el pedido.",
+      mapa: true
+    },
+    "Cochabamba": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. Te pasamos la guía para el recojo.",
+      mapa: false
+    },
+    "Santa Cruz": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. Te pasamos la guía para el recojo.",
+      mapa: false
+    },
+    "Oruro": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. Te pasamos la guía para el recojo.",
+      mapa: false
+    },
+    "Potosí": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. Te pasamos la guía para el recojo.",
+      mapa: false
+    },
+    "Chuquisaca (Sucre)": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. Te pasamos la guía para el recojo.",
+      mapa: false
+    },
+    "Tarija": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. Te pasamos la guía para el recojo.",
+      mapa: false
+    },
+    "Beni (Trinidad)": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. El tiempo de llegada depende de la ruta.",
+      mapa: false
+    },
+    "Pando (Cobija)": {
+      modo: "Envío por flota · lugar a coordinar",
+      detalle: "Enviamos por flota y coordinamos contigo el punto de entrega por WhatsApp. El tiempo de llegada depende de la ruta.",
+      mapa: false
+    }
+  },
+
+  // Nota general que aparece al final de la página de envíos.
+  ENVIO_NOTA: "El costo del envío no está incluido en el precio de los productos. Te lo confirmamos por WhatsApp según tu departamento y el tamaño del pedido.",
+
+  // Punto donde se centra el mapa de entrega a domicilio (La Paz).
+  // Se escribe como [latitud, longitud].
+  MAPA_CENTRO: [-16.4955, -68.1336],
+
+  // ---------------------------------------------------------------
+  // DATOS PARA TRANSFERENCIA (aparecen debajo del QR, en el carrito)
+  // ---------------------------------------------------------------
+  // Escribe aquí entre las comillas el nombre del titular de la cuenta,
+  // el número de cuenta y el banco. Aparecen como un recuadro en la
+  // pantalla de pago, con un botón para copiar el número de cuenta,
+  // y también como un paso más en las instrucciones.
+  //
+  // Si dejas los tres vacíos (""), el recuadro no se muestra y la
+  // pantalla de pago queda solo con el QR, como está ahora.
+  PAGO_TITULAR: "",
+  PAGO_CUENTA: "",
+  PAGO_BANCO: "",
+
+  // ---------------------------------------------------------------
   // QR DEL GRUPO DE WHATSAPP (el que estaba en el catálogo en PDF)
   // ---------------------------------------------------------------
   // Se muestra en la sección "Únete a nuestro grupo" de la página.
