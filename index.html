@@ -96,8 +96,11 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .dlink:hover{background:var(--pg2);color:var(--nvy)}
 .dlink .ct{margin-left:auto;font-size:11.5px;color:var(--sub);font-weight:800;background:var(--pg2);
   padding:2px 9px;border-radius:6px;min-width:32px;text-align:center}
-.dlink.hot{color:var(--ofx)}
+.dlink.hot{color:var(--ofx);font-weight:800;background:linear-gradient(90deg,rgba(245,18,46,.07),rgba(255,106,61,.03))}
+.dlink.hot:hover{background:linear-gradient(90deg,rgba(245,18,46,.13),rgba(255,106,61,.06));color:var(--ofx)}
 .dlink.hot .ct{background:linear-gradient(135deg,var(--of1),var(--of2));color:#fff}
+.dlink .dot{width:7px;height:7px;border-radius:50%;background:var(--of2);margin-right:10px;flex:none;
+  box-shadow:0 0 0 3px rgba(245,18,46,.16)}
 .dsec{border-bottom:1px solid var(--ln)}
 .dsec>summary{display:flex;align-items:center;padding:13px 20px;font-size:14.5px;font-weight:700;
   cursor:pointer;list-style:none;color:var(--txt)}
@@ -121,8 +124,10 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
   font-size:13px;font-weight:800;white-space:nowrap;transition:all .15s}
 .chip:hover{border-color:var(--blu);color:var(--nvy)}
 .chip.on{background:var(--nvy);border-color:var(--nvy);color:#fff}
-.chip.of{border-color:#F6C9C6;color:var(--ofx)}
-.chip.of.on{background:var(--ofx);border-color:var(--ofx);color:#fff}
+.chip.of{border-color:transparent;color:#fff;background:linear-gradient(135deg,var(--of1),var(--of2));
+  box-shadow:0 2px 8px rgba(245,18,46,.26)}
+.chip.of:hover{color:#fff;filter:brightness(1.07)}
+.chip.of.on{background:var(--nvy);box-shadow:none}
 .chip.ago{border-color:#D7DBEA;color:#7B84A6}
 .chip.ago.on{background:#7B84A6;border-color:#7B84A6;color:#fff}
 
@@ -282,13 +287,14 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
 .envcard .dep{font-family:var(--disp);font-size:17px;color:var(--nvy);font-weight:800;min-width:118px}
 .envcard .mod{font-size:14px;font-weight:800;color:var(--blu);margin-bottom:3px}
 .envcard .det{font-size:14px;color:var(--sub);font-weight:600}
+.envbtn{margin-top:12px;padding:9px 16px;font-size:13px}
 
 /* ---------- nosotros / grupo ---------- */
 .info{background:var(--pg2);border-top:1px solid var(--ln)}
 .cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
 .card3{background:#fff;border:1px solid var(--ln);border-radius:var(--r);padding:24px;text-align:center}
-.card3 .ico{width:62px;height:62px;border-radius:50%;background:var(--pg3);display:grid;place-items:center;
-  margin:0 auto 13px;font-size:30px;line-height:1}
+.card3 .ico{width:62px;height:62px;border-radius:50%;background:var(--pg3);color:var(--nvy);display:grid;
+  place-items:center;margin:0 auto 13px}
 .card3 h3{font-size:18px;color:var(--nvy);margin-bottom:6px}
 .card3 p{margin:0;font-size:14px;color:var(--sub);font-weight:600}
 .grupo{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;background:#fff;border:1px solid var(--ln);
@@ -495,9 +501,23 @@ footer .fred svg{width:16px;height:16px;flex:none}
   </div>
 </div>
 
-<!-- Estos dos archivos son los que se editan para actualizar el catálogo -->
-<script src="config.js"></script>
-<script src="productos.js"></script>
+<script>
+/* config.js y productos.js se cargan con un número de versión que cambia
+   cada 5 minutos. Sirve para que el navegador del cliente no se quede con
+   una copia vieja cuando la tienda edita precios o productos. */
+function cargarScript(src){
+  return new Promise((ok, err)=>{
+    const s = document.createElement('script');
+    s.src = src; s.onload = ok; s.onerror = err;
+    document.head.appendChild(s);
+  });
+}
+async function cargarDatos(){
+  const v = Math.floor(Date.now()/300000);
+  try{ await cargarScript('config.js?v='+v); }catch(e){ console.warn('config.js no cargó', e); }
+  try{ await cargarScript('productos.js?v='+v); }catch(e){ console.warn('productos.js no cargó', e); }
+}
+</script>
 
 <script>
 let CART = {}, WISH = [], VIEW = 'list', CURRENT = null, CAT = '', MARCA = '', ESP = '', LIMITE = 24, GAL = 0;
@@ -521,13 +541,6 @@ const antes = p => {
 const enOferta = p => antes(p) > 0;
 const pctDesc = p => enOferta(p) ? Math.round((1 - Number(p.precio)/antes(p)) * 100) : 0;
 const esNuevo = p => /nuev/i.test(p.etiqueta||'');
-
-/* ---------- emojis por categoría ---------- */
-const EMOJI = {
-  'rompecabezas':'🧩', 'rompecabezas 3d':'🏰', 'juegos de mesa':'🎲',
-  'accesorios':'🧰', 'armables y bloques':'🧱', 'juguetes':'🧸'
-};
-const emo = c => EMOJI[String(c||'').toLowerCase().trim()] || '🎁';
 
 /* ---------- redes sociales ---------- */
 const ICO = {
@@ -612,7 +625,7 @@ const cartAhorro = () => cartLines().reduce((a,l)=>a + (enOferta(l.p)?(antes(l.p
 const wishProds = () => WISH.map(id=>PRODUCTOS().find(x=>x.id===id)).filter(Boolean);
 
 function add(id){ const p = PRODUCTOS().find(x=>x.id===id); if(!p||!disponible(p)) return;
-  CART[id]=(CART[id]||0)+1; saveCart(); flash('Agregado al carrito 🛒'); pintarBadges();
+  CART[id]=(CART[id]||0)+1; saveCart(); flash('Agregado al carrito'); pintarBadges();
   if(VIEW!=='list') render(); }
 function setQty(id,d){ CART[id]=(CART[id]||0)+d; if(CART[id]<=0) delete CART[id]; saveCart(); render(); }
 function rm(id){ delete CART[id]; saveCart(); render(); }
@@ -620,7 +633,7 @@ function toggleWish(id, ev){
   if(ev) ev.stopPropagation();
   const i = WISH.indexOf(id);
   if(i>=0){ WISH.splice(i,1); flash('Quitado de tu lista'); }
-  else { WISH.push(id); flash('Guardado en tu lista ❤️'); }
+  else { WISH.push(id); flash('Guardado en tu lista'); }
   saveWish(); pintarBadges();
   if(VIEW==='wish') render();
   else document.querySelectorAll('.heart[data-id="'+id+'"]').forEach(b=>b.classList.toggle('on', WISH.includes(id)));
@@ -648,32 +661,40 @@ function envios(){ return CFG().ENVIOS || {}; }
 function envioDe(dep){ return envios()[dep] || null; }
 
 /* ---------- WhatsApp ---------- */
+const waLink = t => 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(t);
+const saludo = () => 'Hola '+(CFG().TIENDA||'')+', ';
+
 function waPedido(){
   const l = cartLines();
-  let t = '¡Hola '+(CFG().TIENDA||'')+'! 👋 Quiero hacer este pedido:\n\n';
-  l.forEach(x=>{ t += '🧩 '+x.q+' × '+x.p.nombre + (tienePrecio(x.p)?' — '+money(Number(x.p.precio)*x.q):' — precio a confirmar') + '\n'; });
-  t += '\n💰 Total: '+money(cartTotal());
-  if(cartAhorro()>0) t += '\n🏷️ Ahorro por ofertas: '+money(cartAhorro());
+  const p = [saludo()+'quiero hacer este pedido:'];
+  l.forEach(x=>{ p.push(x.q+' x '+x.p.nombre + (tienePrecio(x.p)?' - '+money(Number(x.p.precio)*x.q):' - precio a confirmar')); });
+  p.push('Total: '+money(cartTotal()));
   if(DEP){
     const e = envioDe(DEP);
-    t += '\n\n📍 Departamento: '+DEP;
-    if(e) t += '\n🚚 Entrega: '+e.modo;
-    if(PUNTO.trim()) t += '\n📌 Punto de entrega: '+PUNTO.trim();
+    p.push('Departamento: '+DEP);
+    if(e) p.push('Entrega: '+e.modo);
   }
-  if(COORD) t += '\n🗺️ Mi ubicación: https://maps.google.com/?q='+COORD[0].toFixed(6)+','+COORD[1].toFixed(6);
-  t += '\n\n✅ Ya realicé el pago y envío el comprobante.';
-  return 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(t);
+  if(PUNTO.trim()) p.push('Punto de entrega: '+PUNTO.trim());
+  if(COORD) p.push('Ubicación: https://maps.google.com/?q='+COORD[0].toFixed(6)+','+COORD[1].toFixed(6));
+  p.push('Ya realicé el pago y envío el comprobante.');
+  return waLink(p.join('\n'));
 }
 function waProducto(p){
-  return 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(
-    '¡Hola '+(CFG().TIENDA||'')+'! 👋 Quiero consultar por: '+p.nombre+(p.piezas?' ('+p.piezas+' piezas)':'')+' 🧩 ¿Está disponible?');
+  return waLink(saludo()+'quiero consultar por: '+p.nombre+(p.piezas?' ('+p.piezas+' piezas)':'')+
+    (disponible(p)?'. ¿Está disponible?':'. Está agotado, ¿cuándo vuelve a haber?'));
 }
 function waLista(){
   const l = wishProds();
-  let t = '¡Hola '+(CFG().TIENDA||'')+'! 👋 Esta es mi lista de deseos:\n\n';
-  l.forEach(p=>{ t += '❤️ '+p.nombre + (tienePrecio(p)?' — '+money(p.precio):'') + '\n'; });
-  t += '\n¿Me confirman disponibilidad y precios? 🙌';
-  return 'https://wa.me/'+CFG().WHATSAPP+'?text='+encodeURIComponent(t);
+  const p = [saludo()+'esta es mi lista de deseos:'];
+  l.forEach(x=>{ p.push('- '+x.nombre + (tienePrecio(x)?' - '+money(x.precio):'')); });
+  p.push('¿Me confirman disponibilidad y precios?');
+  return waLink(p.join('\n'));
+}
+function waEnvio(dep){
+  const e = dep ? envioDe(dep) : null;
+  if(!dep) return waLink(saludo()+'quiero consultar el costo de envío. ¿A qué departamentos hacen entregas?');
+  if(e && e.mapa) return waLink(saludo()+'quiero consultar el costo de entrega a domicilio en '+dep+'.');
+  return waLink(saludo()+'quiero consultar el costo de envío a '+dep+' y cómo se coordina la entrega.');
 }
 
 /* ---------- navegación ---------- */
@@ -797,12 +818,12 @@ function heroHTML(){
     <div class="bg" style="background-image:url('${esc(foto)}')"></div>
     <div class="ov"></div>
     <div class="in"><div class="hero-grid"><div class="hero-txt">
-      <span class="kicker">🧩 Rompecabezas · 🎲 Juegos de mesa · 📍 La Paz</span>
+      <span class="kicker">Rompecabezas · Juegos de mesa · La Paz</span>
       <h1>WarmaGames <span class="nb">Bolivia<svg class="flag-big" viewBox="0 0 9 6" aria-label="Bandera de Bolivia"><rect width="9" height="2" y="0" fill="#D52B1E"/><rect width="9" height="2" y="2" fill="#F9E300"/><rect width="9" height="2" y="4" fill="#007934"/></svg></span></h1>
       <p class="sub">Juguetes para todas las edades. Envíos a todo Bolivia. Elige, arma tu pedido y te lo confirmamos por WhatsApp.</p>
       <div class="hero-cta">
-        <a class="btn btn-yel" href="#catalogo">🧩 Ver el catálogo</a>
-        <a class="btn btn-wa" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">💬 Pedir por WhatsApp</a>
+        <a class="btn btn-yel" href="#catalogo">Ver el catálogo</a>
+        <a class="btn btn-wa" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">Pedir por WhatsApp</a>
       </div>
       <div class="hero-stats">
         <div><b>${total}</b><span>productos disponibles</span></div>
@@ -823,18 +844,18 @@ function infoHTML(){
       <p>Una tienda boliviana de rompecabezas y juegos de mesa</p></div></div>
     <div class="cards3">
       <div class="card3">
-        <div class="ico">🚚</div>
+        <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h11v9H2z"/><path d="M13 10h4l3 3v3h-7"/><circle cx="6" cy="18.5" r="1.6"/><circle cx="16.5" cy="18.5" r="1.6"/></svg></div>
         <h3>Envíos a todo Bolivia</h3>
         <p>Entrega en moto en La Paz y envío por flota a los demás departamentos.
           <a href="#" onclick="go('envios');return false">Ver detalles</a></p>
       </div>
       <div class="card3">
-        <div class="ico">🧩</div>
+        <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4v2.5a2 2 0 1 0 4 0V3h3v4h-2.5a2 2 0 1 0 0 4H21v4h-4v3a2 2 0 1 1-4 0v-3H9v-4H6.5a2 2 0 1 1 0-4H9V3z"/></svg></div>
         <h3>Catálogo completo</h3>
         <p>Rompecabezas desde 30 hasta 13.200 piezas, juegos de mesa, armables y accesorios.</p>
       </div>
       <div class="card3">
-        <div class="ico">⭐</div>
+        <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></div>
         <h3>Juguetes para todas las edades</h3>
         <p>Marcas reconocidas como Clementoni, Devir y más, para niños y adultos.</p>
       </div>
@@ -842,14 +863,14 @@ function infoHTML(){
     ${qr ? `<div class="grupo">
       <img src="${esc(qr)}" alt="QR del grupo de WhatsApp de WarmaGames">
       <div>
-        <h3>💬 Únete a nuestro grupo de WhatsApp</h3>
-        <p>Escanea el código con la cámara de WhatsApp y entérate primero de las novedades, ofertas y nuevos ingresos. 🎉</p>
+        <h3>Únete a nuestro grupo de WhatsApp</h3>
+        <p>Escanea el código con la cámara de WhatsApp y entérate primero de las novedades, ofertas y nuevos ingresos.</p>
         <a class="btn btn-wa" href="${wa}" target="_blank" rel="noopener">Escríbenos y te agregamos</a>
       </div>
     </div>` : ''}
     ${redes().length ? `<div class="socialbox">
-      <h3>📲 Síguenos en nuestras redes</h3>
-      <p>Ahí publicamos los nuevos ingresos, ofertas y sorteos. 🎁</p>
+      <h3>Síguenos en nuestras redes</h3>
+      <p>Ahí publicamos los nuevos ingresos, ofertas y sorteos.</p>
       <div class="social-links">
         ${redes().map(r=>`<a class="social ${r.k}" href="${esc(r.u)}" target="_blank" rel="noopener">
             <span class="si">${ICO[r.k]}</span>
@@ -900,7 +921,7 @@ function vistaDetalle(){
         ${disponible(p) && tienePrecio(p)
           ? `<button class="btn btn-nvy" onclick="add('${esc(p.id)}')">Agregar al carrito</button>`:''}
         <a class="btn btn-wa" href="${waProducto(p)}" target="_blank" rel="noopener">Consultar por WhatsApp</a>
-        <button class="btn btn-out" onclick="toggleWish('${esc(p.id)}')">${fav?'❤️ En mi lista':'🤍 Guardar en mi lista'}</button>
+        <button class="btn btn-out" onclick="toggleWish('${esc(p.id)}')">${fav?'Quitar de mi lista':'Guardar en mi lista'}</button>
       </div>
     </div>
   </div>
@@ -922,7 +943,7 @@ function vistaWish(){
   if(!l.length) return `<div class="in">
     <button class="back" onclick="go('list')">← Volver al catálogo</button>
     <p class="empty">Tu lista de deseos está vacía.<br><br>
-      Toca el corazón 🤍 de cualquier producto para guardarlo aquí y pedirlo después.<br><br>
+      Toca el corazón de cualquier producto para guardarlo aquí y pedirlo después.<br><br>
       <button class="btn btn-nvy" onclick="go('list')">Ver el catálogo</button></p></div>`;
   return `<div class="in">
     <button class="back" onclick="go('list')">← Volver al catálogo</button>
@@ -930,7 +951,7 @@ function vistaWish(){
       <div class="sec-h">
         <div><h2>Mi lista de deseos</h2>
           <p>${l.length} producto${l.length===1?'':'s'} guardado${l.length===1?'':'s'} en este dispositivo</p></div>
-        <a class="btn btn-wa" href="${waLista()}" target="_blank" rel="noopener">💬 Enviar mi lista por WhatsApp</a>
+        <a class="btn btn-wa" href="${waLista()}" target="_blank" rel="noopener">Enviar mi lista por WhatsApp</a>
       </div>
       <div class="grid">${l.map(tarjeta).join('')}</div>
     </section>
@@ -951,11 +972,11 @@ function vistaEnvios(){
           <div>
             <div class="mod">${esc(e[d].modo||'')}</div>
             <div class="det">${esc(e[d].detalle||'')}</div>
+            <a class="btn btn-wa envbtn" href="${waEnvio(d)}" target="_blank" rel="noopener">Consultar envío a ${esc(d)}</a>
           </div>
         </div>`).join('')}
       </div>
       <p class="mapnote" style="margin-top:16px">${esc(CFG().ENVIO_NOTA||'')}</p>
-      <a class="btn btn-wa" href="${CFG().WHATSAPP?('https://wa.me/'+CFG().WHATSAPP):'#'}" target="_blank" rel="noopener">💬 Consultar costo de envío</a>
     </section>
   </div>`;
 }
@@ -1002,7 +1023,7 @@ function vistaCarrito(){
     </div>`:''}
     ${e && e.mapa ? `
       <div id="mapa"></div>
-      <p class="mapnote">📍 Toca el mapa para marcar tu ubicación exacta. Se enviará junto a tu pedido por WhatsApp.
+      <p class="mapnote">Toca el mapa para marcar tu ubicación exacta. Se enviará junto a tu pedido por WhatsApp.
         ${COORD?'<br><b style="color:#136B37">Ubicación marcada ✓</b>':''}</p>
     ` : ''}
   </div>`;
@@ -1018,14 +1039,14 @@ function vistaCarrito(){
   const hayBanco = tit || cta || bco;
   const bancoHTML = hayBanco ? `
     <div class="bank">
-      <h4>🏦 Datos para el pago</h4>
+      <h4>Datos para el pago</h4>
       ${tit?`<div class="brow"><span>Titular</span><b>${esc(tit)}</b></div>`:''}
       ${cta?`<div class="brow"><span>Cuenta</span><b>${esc(cta)}</b>
           <button class="copy" onclick="copiar('${esc(cta)}')">Copiar</button></div>`:''}
       ${bco?`<div class="brow"><span>Banco</span><b>${esc(bco)}</b></div>`:''}
     </div>` : '';
   const pasoBanco = hayBanco
-    ? `<li>🏦 O realiza el pago a <b>${esc(tit)}</b>${cta?`, cuenta <b>${esc(cta)}</b>`:''}${bco?` del <b>${esc(bco)}</b>`:''}.</li>`
+    ? `<li>O realiza el pago a <b>${esc(tit)}</b>${cta?`, cuenta <b>${esc(cta)}</b>`:''}${bco?` del <b>${esc(bco)}</b>`:''}.</li>`
     : '';
 
   return `<div class="in"><button class="back" onclick="go('list')">← Seguir viendo el catálogo</button>
@@ -1033,7 +1054,7 @@ function vistaCarrito(){
     <h1 style="font-size:28px;color:var(--nvy);margin:10px 0 6px;font-family:var(--disp)">Tu pedido</h1>
     ${items}
     <div class="tot"><span>Total</span><b>${money(cartTotal())}</b></div>
-    ${cartAhorro()>0?`<div class="ahorro-tot">🏷️ Estás ahorrando ${money(cartAhorro())} con las ofertas</div>`:''}
+    ${cartAhorro()>0?`<div class="ahorro-tot">Estás ahorrando ${money(cartAhorro())} con las ofertas</div>`:''}
     ${envHTML}
     <div class="box pay">
       <h3>${esc(CFG().QR_TITULO||'Paga escaneando el QR')}</h3>
@@ -1041,14 +1062,14 @@ function vistaCarrito(){
       <div class="qr">${qr}</div>
       ${bancoHTML}
       <ol class="steps">
-        <li>📱 Escanea el QR con la app de tu banco y paga <b>${money(cartTotal())}</b>.</li>
+        <li>Escanea el QR con la app de tu banco y paga <b>${money(cartTotal())}</b>.</li>
         ${pasoBanco}
-        <li>📸 Toma una captura del comprobante.</li>
-        <li>💬 Toca el botón verde: se abre WhatsApp con tu pedido ya escrito.</li>
-        <li>📤 Envía el mensaje y adjunta la captura del comprobante.</li>
+        <li>Toma una captura del comprobante.</li>
+        <li>Toca el botón verde: se abre WhatsApp con tu pedido ya escrito.</li>
+        <li>Envía el mensaje y adjunta la captura del comprobante.</li>
       </ol>
       <a class="btn btn-wa" id="waPedidoBtn" style="padding:15px 24px;font-size:15.5px" href="${waPedido()}" target="_blank" rel="noopener">
-        💬 Enviar pedido por WhatsApp</a>
+        Enviar pedido por WhatsApp</a>
     </div>
   </div></div>`;
 }
@@ -1082,7 +1103,7 @@ function cargarMapa(){
       const nota = document.querySelector('.mapnote');
       if(nota && !nota.querySelector('b')) nota.insertAdjacentHTML('beforeend','<br><b style="color:#136B37">Ubicación marcada ✓</b>');
       actualizarWA();
-      flash('Ubicación marcada 📍');
+      flash('Ubicación marcada');
     });
     setTimeout(()=>MAPA.invalidateSize(), 200);
   };
@@ -1103,7 +1124,7 @@ function cargarMapa(){
       if(!c) return;
       const nota = c.nextElementSibling;
       if(nota && nota.classList.contains('mapnote')) nota.remove();
-      c.outerHTML = '<p class="mapnote">📎 Cuando envíes tu pedido por WhatsApp, comparte tu ubicación con el clip → Ubicación, así el motorizado llega directo.</p>';
+      c.outerHTML = '<p class="mapnote">Cuando envíes tu pedido por WhatsApp, comparte tu ubicación con el clip y la opción Ubicación, así el motorizado llega directo.</p>';
     };
     document.head.appendChild(s);
   } else { iniciar(); }
@@ -1121,7 +1142,8 @@ function pintarMenu(){
     <div class="dgroup">Catálogo</div>
     <button class="dlink" onclick="limpiar();cerrarMenu()">Todos los productos
       <span class="ct">${visibles().length}</span></button>
-    ${nOf?`<button class="dlink hot" onclick="setEsp('ofertas')">Ofertas
+    ${nOf?`<button class="dlink hot" onclick="setEsp('ofertas')">
+      <span class="dot"></span>Ofertas y descuentos
       <span class="ct">${nOf}</span></button>`:''}
     ${nNu?`<button class="dlink" onclick="setEsp('nuevos')">Novedades
       <span class="ct">${nNu}</span></button>`:''}
@@ -1175,6 +1197,7 @@ function render(){
 }
 
 async function init(){
+  await cargarDatos();
   loadCart(); loadWish();
   try{ DEP = localStorage.getItem('wg_dep') || ''; }catch(e){}
   if(!window.CONFIG){

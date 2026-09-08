@@ -44,6 +44,16 @@
 
   Estos 149 productos salieron del catálogo de Navidad 2025 de WarmaGames
   (nombres, precios y fotos reales del PDF).
+
+  ATENCIÓN — DATOS DE DEMOSTRACIÓN:
+  10 productos traen "precio_antes" y "etiqueta" llenos a modo de ejemplo,
+  para que se vea cómo funcionan las ofertas y los sellos. Los precios
+  anteriores son inventados (precio actual + 15% aprox.), NO son precios
+  reales que haya tenido la tienda.
+  Antes de promocionar el catálogo, WarmaGames debe revisarlos: dejar los
+  que sean ciertos y borrar el contenido de "precio_antes" en los demás.
+  Los productos con ejemplo son: WG-001, WG-002, WG-004, WG-025, WG-100,
+  WG-115, WG-135, WG-137, WG-140 y WG-141.
 */
 
 window.PRODUCTOS = [
@@ -54,8 +64,8 @@ window.PRODUCTOS = [
     marca: "Novelty",
     piezas: "1000",
     precio: "195",
-    precio_antes: "",
-    etiqueta: "",
+    precio_antes: "240",
+    etiqueta: "Nuevo",
     stock: "Disponible",
     imagen: "WG-001.jpg",
     imagenes: "WG-001-2.jpg",
@@ -71,7 +81,7 @@ window.PRODUCTOS = [
     marca: "Clementoni",
     piezas: "",
     precio: "195",
-    precio_antes: "",
+    precio_antes: "230",
     etiqueta: "",
     stock: "Disponible",
     imagen: "WG-002.jpg",
@@ -105,8 +115,8 @@ window.PRODUCTOS = [
     marca: "Clementoni",
     piezas: "1500",
     precio: "230",
-    precio_antes: "",
-    etiqueta: "",
+    precio_antes: "280",
+    etiqueta: "Oferta",
     stock: "Disponible",
     imagen: "WG-004.jpg",
     imagenes: "WG-004-2.jpg|WG-004-3.jpg|WG-004-4.jpg",
@@ -462,7 +472,7 @@ window.PRODUCTOS = [
     marca: "Clementoni",
     piezas: "1500",
     precio: "220",
-    precio_antes: "",
+    precio_antes: "260",
     etiqueta: "",
     stock: "Disponible",
     imagen: "WG-025.jpg",
@@ -1737,8 +1747,8 @@ window.PRODUCTOS = [
     marca: "Clementoni",
     piezas: "1000",
     precio: "270",
-    precio_antes: "",
-    etiqueta: "",
+    precio_antes: "320",
+    etiqueta: "Nuevo",
     stock: "Disponible",
     imagen: "WG-100.jpg",
     imagenes: "",
@@ -1993,7 +2003,7 @@ window.PRODUCTOS = [
     piezas: "1000",
     precio: "270",
     precio_antes: "",
-    etiqueta: "",
+    etiqueta: "Nuevo",
     stock: "Disponible",
     imagen: "WG-115.jpg",
     imagenes: "",
@@ -2332,8 +2342,8 @@ window.PRODUCTOS = [
     marca: "Clementoni",
     piezas: "6000",
     precio: "460",
-    precio_antes: "",
-    etiqueta: "",
+    precio_antes: "540",
+    etiqueta: "Últimas unidades",
     stock: "Disponible",
     imagen: "WG-135.jpg",
     imagenes: "",
@@ -2366,8 +2376,8 @@ window.PRODUCTOS = [
     marca: "Devir",
     piezas: "",
     precio: "199",
-    precio_antes: "",
-    etiqueta: "",
+    precio_antes: "240",
+    etiqueta: "Nuevo",
     stock: "Disponible",
     imagen: "WG-137.jpg",
     imagenes: "",
@@ -2417,7 +2427,7 @@ window.PRODUCTOS = [
     marca: "Devir",
     piezas: "",
     precio: "250",
-    precio_antes: "",
+    precio_antes: "290",
     etiqueta: "",
     stock: "Disponible",
     imagen: "WG-140.jpg",
@@ -2434,8 +2444,8 @@ window.PRODUCTOS = [
     marca: "Clementoni",
     piezas: "",
     precio: "99",
-    precio_antes: "",
-    etiqueta: "",
+    precio_antes: "120",
+    etiqueta: "Nuevo",
     stock: "Disponible",
     imagen: "WG-141.jpg",
     imagenes: "",
