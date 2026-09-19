@@ -182,7 +182,6 @@ header{background:#fff;border-bottom:1px solid var(--ln);position:sticky;top:0;z
   color:#C3CBE6;transition:color .15s,transform .15s}
 .heart:hover{transform:scale(1.1);color:var(--red)}
 .heart.on{color:var(--red)}
-.out{position:absolute;inset:0;background:rgba(244,246,252,.62);backdrop-filter:saturate(.35)}
 .pb{padding:13px 14px 15px;display:flex;flex-direction:column;gap:5px;flex:1}
 .mk{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blu)}
 .nm{font-size:14.5px;font-weight:700;line-height:1.3;margin:0;cursor:pointer;font-family:var(--body);
@@ -528,9 +527,17 @@ const CFG = () => window.CONFIG || {};
 const PRODUCTOS = () => window.PRODUCTOS || [];
 const money = v => (CFG().MONEDA||'Bs') + ' ' + Number(v).toLocaleString('es-BO');
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const disponible = p => !/agotad/i.test(p.stock||'');
+const disponible = p => {
+  const c = String(p.cantidad ?? '').trim();
+  if(c !== '' && !isNaN(Number(c)) && Number(c) <= 0) return false;  // sin unidades
+  return !/agotad/i.test(p.stock||'');
+};
 const tienePrecio = p => p.precio !== '' && p.precio != null && !isNaN(Number(p.precio)) && Number(p.precio) > 0;
-const imgSrc = f => f ? 'fotos/' + f : '';
+const imgSrc = f => {
+  const v = String(f||'').trim();
+  if(!v) return '';
+  return /^https?:\/\//i.test(v) ? v : 'fotos/' + v;   // link completo o archivo en /fotos
+};
 const fotosDe = p => [p.imagen, ...String(p.imagenes||'').split('|')].filter(Boolean);
 
 /* ---------- ofertas y etiquetas ---------- */
@@ -541,6 +548,11 @@ const antes = p => {
 const enOferta = p => antes(p) > 0;
 const pctDesc = p => enOferta(p) ? Math.round((1 - Number(p.precio)/antes(p)) * 100) : 0;
 const esNuevo = p => /nuev/i.test(p.etiqueta||'');
+const esDestacado = p => /^(si|sí|s|x|1|true|destacado)$/i.test(String(p.destacado||'').trim());
+const ordenDe = p => {
+  const n = Number(String(p.orden??'').trim());
+  return (String(p.orden??'').trim()!=='' && !isNaN(n)) ? n : 99999;
+};
 
 /* ---------- redes sociales ---------- */
 const ICO = {
@@ -563,13 +575,23 @@ function normKey(k){
     .replace(/[^a-z0-9]/g,'');
 }
 const SHEET_KEYS = {
-  id:'id', nombre:'nombre', categoria:'categoria', marca:'marca', piezas:'piezas',
-  precio:'precio', preciobs:'precio', precioantes:'precio_antes', precioanterior:'precio_antes',
-  etiqueta:'etiqueta', sello:'etiqueta', stock:'stock',
-  imagen:'imagen', imagenurl:'imagen', imagenarchivo:'imagen',
+  id:'id', codigo:'id',
+  nombre:'nombre', categoria:'categoria', marca:'marca', piezas:'piezas',
+  precio:'precio', preciobs:'precio', preciobolivianos:'precio',
+  precioantes:'precio_antes', precioanterior:'precio_antes', precioantesbs:'precio_antes',
+  etiqueta:'etiqueta', sello:'etiqueta',
+  stock:'stock', disponibilidad:'stock',
+  imagen:'imagen', imagenurl:'imagen', imagenarchivo:'imagen', foto:'imagen', fotolink:'imagen',
   imagenes:'imagenes', fotosextra:'imagenes',
-  descripcion:'descripcion', mostrar:'mostrar', edad:'edad', tamano:'tamano'
+  descripcion:'descripcion', mostrar:'mostrar', edad:'edad', tamano:'tamano',
+  cantidad:'cantidad', unidades:'cantidad', destacado:'destacado', orden:'orden',
+  jugadores:'jugadores', duracion:'duracion', duracionmin:'duracion',
+  dificultad:'dificultad', idioma:'idioma', material:'material',
+  video:'video', videourl:'video', sku:'sku', fechaingreso:'fecha_ingreso'
 };
+// La planilla nueva usa "Código" como encabezado visible, pero significa el mismo
+// campo que antes se llamaba "id" — por eso codigo:'id' arriba. sku (referencia interna
+// aparte del código de venta) ya no comparte alias con "código" para no confundirlos.
 function parseCSV(text){
   const rows = []; let row = [], field = '', inQuotes = false;
   for(let i=0;i<text.length;i++){
@@ -591,10 +613,16 @@ function parseCSV(text){
 }
 function rowsToProducts(rows){
   if(!rows.length) return [];
-  const headers = rows[0].map(h => SHEET_KEYS[normKey(h)] || normKey(h));
-  return rows.slice(1).map(r=>{
-    const o = {}; headers.forEach((h,i)=>{ o[h] = (r[i]??'').trim(); }); return o;
-  }).filter(p => p.id);
+  // Busca la fila de encabezados: la primera que tenga una celda "id".
+  // Así la planilla puede tener filas de título o de grupos arriba sin romperse.
+  let h = 0;
+  for(let i=0; i<Math.min(rows.length, 12); i++){
+    if(rows[i].some(c => (SHEET_KEYS[normKey(c)]||normKey(c)) === 'id')){ h = i; break; }
+  }
+  const headers = rows[h].map(x => SHEET_KEYS[normKey(x)] || normKey(x));
+  return rows.slice(h+1).map(r=>{
+    const o = {}; headers.forEach((k,i)=>{ o[k] = (r[i]??'').trim(); }); return o;
+  }).filter(p => p.id && normKey(p.id) !== 'id' && normKey(p.id) !== 'ejemplo');
 }
 async function cargarProductosSheet(){
   const url = (CFG().SHEET_CSV||'').trim();
@@ -716,7 +744,10 @@ function imgTag(file, alt, cls){
     : `<div class="noimg">Sin foto</div>`;
 }
 
-function visibles(){ return PRODUCTOS().filter(p => (p.mostrar||'Si').toLowerCase() !== 'no'); }
+function visibles(){
+  const l = PRODUCTOS().filter(p => (p.mostrar||'Si').toLowerCase() !== 'no');
+  return l.map((p,i)=>({p,i})).sort((a,b)=> ordenDe(a.p)-ordenDe(b.p) || a.i-b.i).map(x=>x.p);
+}
 function filtrados(){
   const q = ($('#q').value||'').trim().toLowerCase();
   return visibles().filter(p =>
@@ -725,7 +756,7 @@ function filtrados(){
     (ESP!=='ofertas' || enOferta(p)) &&
     (ESP!=='nuevos' || esNuevo(p)) &&
     (ESP!=='agotados' || !disponible(p)) &&
-    (!q || (p.nombre+' '+p.marca+' '+p.categoria+' '+p.piezas+' '+(p.descripcion||'')+' '+(p.etiqueta||'')).toLowerCase().includes(q)));
+    (!q || (p.nombre+' '+p.marca+' '+p.categoria+' '+p.piezas+' '+(p.descripcion||'')+' '+(p.etiqueta||'')+' '+(p.sku||'')+' '+(p.idioma||'')).toLowerCase().includes(q)));
 }
 
 function tarjeta(p){
@@ -739,8 +770,7 @@ function tarjeta(p){
       aria-label="Guardar en mi lista" title="Guardar en mi lista">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="${fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6A5.5 5.5 0 0 0 12 7a5.5 5.5 0 0 0-8.8 1.6c-1 2.4.2 5 4 8.3l4.8 4.2 4.8-4.2c3.8-3.3 5-5.9 4-8.3z"/></svg>
     </button>
-    <div class="im" onclick="go('detail','${esc(p.id)}')">${imgTag(p.imagen, p.nombre)}
-      ${disponible(p)?'':'<div class="out"></div>'}</div>
+    <div class="im" onclick="go('detail','${esc(p.id)}')">${imgTag(p.imagen, p.nombre)}</div>
     ${bdgs.length?`<div class="badges">${bdgs.join('')}</div>`:''}
     <div class="pb">
       ${p.marca?`<span class="mk">${esc(p.marca)}</span>`:'<span class="mk">&nbsp;</span>'}
@@ -799,15 +829,21 @@ function vistaLista(){
 }
 
 function destacadosHTML(){
+  let html = '';
+  const dest = visibles().filter(esDestacado).slice(0,4);
+  if(dest.length) html += `<section class="sec in">
+    <div class="sec-h"><div><h2>Destacados</h2><p>Nuestra selección recomendada</p></div></div>
+    <div class="grid">${dest.map(tarjeta).join('')}</div>
+  </section>`;
   const ofertas = visibles().filter(enOferta).slice(0,4);
-  if(!ofertas.length) return '';
-  return `<section class="sec in">
+  if(ofertas.length) html += `<section class="sec in">
     <div class="sec-h">
       <div><h2>Ofertas de la semana</h2><p>Precios rebajados por tiempo limitado</p></div>
       <button class="btn btn-out" onclick="setEsp('ofertas')">Ver todas</button>
     </div>
     <div class="grid">${ofertas.map(tarjeta).join('')}</div>
   </section>`;
+  return html;
 }
 
 function heroHTML(){
@@ -915,6 +951,11 @@ function vistaDetalle(){
         ${p.piezas?`<tr><td>Piezas</td><td>${esc(p.piezas)}</td></tr>`:''}
         ${p.tamano?`<tr><td>Medida armado</td><td>${esc(p.tamano)}</td></tr>`:''}
         ${p.edad?`<tr><td>Edad recomendada</td><td>${esc(p.edad)}</td></tr>`:''}
+        ${p.jugadores?`<tr><td>Jugadores</td><td>${esc(p.jugadores)}</td></tr>`:''}
+        ${p.duracion?`<tr><td>Duración</td><td>${esc(p.duracion)}</td></tr>`:''}
+        ${p.dificultad?`<tr><td>Dificultad</td><td>${esc(p.dificultad)}</td></tr>`:''}
+        ${p.idioma?`<tr><td>Idioma</td><td>${esc(p.idioma)}</td></tr>`:''}
+        ${p.material?`<tr><td>Material</td><td>${esc(p.material)}</td></tr>`:''}
         <tr><td>Código</td><td>${esc(p.id)}</td></tr>
       </table>
       <div class="dbtns">
@@ -922,6 +963,7 @@ function vistaDetalle(){
           ? `<button class="btn btn-nvy" onclick="add('${esc(p.id)}')">Agregar al carrito</button>`:''}
         <a class="btn btn-wa" href="${waProducto(p)}" target="_blank" rel="noopener">Consultar por WhatsApp</a>
         <button class="btn btn-out" onclick="toggleWish('${esc(p.id)}')">${fav?'Quitar de mi lista':'Guardar en mi lista'}</button>
+        ${p.video?`<a class="btn btn-out" href="${esc(p.video)}" target="_blank" rel="noopener">Ver video</a>`:''}
       </div>
     </div>
   </div>

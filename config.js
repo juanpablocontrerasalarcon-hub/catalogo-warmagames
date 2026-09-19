@@ -70,7 +70,7 @@ window.CONFIG = {
   // 4. Pégalo aquí abajo, entre las comillas.
   //
   // Si lo dejas vacío (""), el catálogo usa productos.js.
-  SHEET_CSV: "",
+  SHEET_CSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSoPfRFD-uY6KAPxXrIyyR2PuXSltbVJFNERWqpcQsgnsLPLhLaHtmGBGccIX2p4yMaIwHeOMrJKSLN/pub?gid=2001468972&single=true&output=csv",
 
   // ---------------------------------------------------------------
   // QR DE PAGO (el del banco, para que los clientes paguen)
