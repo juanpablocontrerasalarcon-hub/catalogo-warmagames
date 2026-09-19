@@ -534,8 +534,13 @@ const disponible = p => {
 };
 const tienePrecio = p => p.precio !== '' && p.precio != null && !isNaN(Number(p.precio)) && Number(p.precio) > 0;
 const imgSrc = f => {
-  const v = String(f||'').trim();
+  let v = String(f||'').replace(/[\r\n\t]/g,'').trim();
   if(!v) return '';
+  // Si quedó guardado con http://, lo forzamos a https:// — el navegador bloquea
+  // las imágenes http dentro de una página https y la foto nunca aparece.
+  if(/^http:\/\//i.test(v)) v = 'https://' + v.slice(7);
+  // Link de la página de ImgBB (ibb.co/xxxx) en vez del link directo de la imagen.
+  if(/^https:\/\/ibb\.co\//i.test(v)) console.warn('[WarmaGames] Link de página de ImgBB, no de imagen:', v);
   return /^https?:\/\//i.test(v) ? v : 'fotos/' + v;   // link completo o archivo en /fotos
 };
 const fotosDe = p => [p.imagen, ...String(p.imagenes||'').split('|')].filter(Boolean);
@@ -740,8 +745,23 @@ function cerrarMenu(){ $('#drawer').classList.remove('open'); $('#ovl').classLis
 function imgTag(file, alt, cls){
   const src = imgSrc(file);
   return src ? `<img src="${esc(src)}" alt="${esc(alt||'')}" loading="lazy" class="${cls||''}"
-      onerror="this.parentNode.innerHTML='<div class=&quot;noimg&quot;>Sin foto</div>'">`
+      onerror="console.warn('[WarmaGames] No cargó la imagen:', this.src); this.parentNode.innerHTML='<div class=&quot;noimg&quot;>Foto no disponible</div>'">`
     : `<div class="noimg">Sin foto</div>`;
+}
+
+/* Modo revisión: abrir la web agregando ?diag=1 al final del link muestra
+   qué link de foto tiene cada producto. No lo ve ningún cliente. */
+function vistaDiag(){
+  const filas = PRODUCTOS().map(p =>
+    `<tr><td>${esc(p.id)}</td><td>${esc(p.nombre)}</td>
+     <td style="word-break:break-all;font-size:12px">${p.imagen ? esc(p.imagen) : '<b style="color:#C0261B">VACÍO</b>'}</td>
+     <td>${p.imagen ? `<img src="${esc(imgSrc(p.imagen))}" style="width:54px;height:54px;object-fit:contain"
+        onerror="this.replaceWith(document.createTextNode('NO CARGA'))">` : '—'}</td></tr>`).join('');
+  return `<div class="in" style="padding:20px">
+    <h2>Revisión de fotos (${PRODUCTOS().length} productos)</h2>
+    <table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:13px">
+      <tr><th>Código</th><th>Nombre</th><th>Link guardado</th><th>Carga</th></tr>${filas}
+    </table></div>`;
 }
 
 function visibles(){
@@ -1228,6 +1248,7 @@ function pintarChips(){
 }
 
 function render(){
+  if(/[?&]diag=1/.test(location.search)){ $('#app').innerHTML = vistaDiag(); return; }
   $('#app').innerHTML =
     VIEW==='detail' ? vistaDetalle() :
     VIEW==='cart'   ? vistaCarrito() :
