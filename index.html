@@ -330,6 +330,12 @@ footer .fred{display:flex;align-items:center;gap:8px;padding:5px 0}
 footer .fred svg{width:16px;height:16px;flex:none}
 .copy2{border-top:1px solid rgba(255,255,255,.14);margin-top:26px;padding-top:16px;font-size:12.5px;color:#93A2DA;
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.copy2 .powered{flex-basis:100%;display:flex;align-items:center;justify-content:center;
+  gap:6px 10px;flex-wrap:wrap;margin-top:10px;opacity:.7;transition:opacity .15s}
+.copy2 .powered:hover{opacity:1}
+.copy2 .powered .pw{white-space:nowrap}
+.copy2 .powered img{width:auto;height:18px;display:block;filter:grayscale(1)}
+.copy2 .powered b{font-weight:700;color:#DDE4FB}
 
 /* ---------- whatsapp flotante ---------- */
 .fab{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
@@ -394,6 +400,7 @@ footer .fred svg{width:16px;height:16px;flex:none}
   .heart{width:32px;height:32px}
   .sec{padding:32px 0}
   footer .cols{grid-template-columns:1fr}
+  footer{padding-bottom:140px}
   .fab a,.fab button{width:54px;height:54px}
 }
 </style>
@@ -473,6 +480,7 @@ footer .fred svg{width:16px;height:16px;flex:none}
     <div class="copy2">
       <span>© <span id="yr"></span> WarmaGames Bolivia</span>
       <span>Precios en bolivianos (Bs). Sujetos a disponibilidad.</span>
+      <span class="powered"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAoCAYAAAC4h3lxAAAE80lEQVR42s2ZW4iVVRTH//vMOTnWqE1Z2KBilBpC1iARRaXPRvRgYmUXMFCol+ihYmIitMLAwodEiPQhIqYa8qXLQ2qR9WBYlBF0o4k0tOs0TU0zc+Z8vx5aW5bbczqnmXPb8PHN+fb+9rfWf93+a09QnQeQCyFkwDpJmyWdJakkKS/p2RDCYFyjdhtAh92vASY4c/wELAQCkGs34QOQA/LAIRN4HJgEisDf9mynV7Yd0b/LBJ0EpoCSKTBl15/AFW1lBYd+F/AlkDmhS0746FavtJUVHPqPVUC/6BQp2vx1baGEIR+AS4ARJ2TJrjiiQtEKb9u7uZYrYPcXTLAJhzzAPuCtxDJx7uaWWsG5zpoE+ej/I8BFwEpTrJgo8CnQGa3YKvfpAD5IEJ6039vc2ucSC8U197bECg79O8sIXwK+BrpdjFwM/OoyUtGy1Xe2LjTNCi5tdgPfmiAp+ndERZ2y/U5ZHyePNNUKZdLmRCL8IRM8op8q7GvDlFGMRU0pbi7rLAN+d+7g76tTRJ3Sm03JYlLcdjfFCk6QAYd+5tB/yStaxu1mA58klosU4/Jy7zZC+OuTyhrT5yiwtJIQ7v0bE7oxbgq93DAFHIIF4L0kGKMbPF7NDVxc7HeM1bvfmoa4kkPv7jJpM7O0Oa9aOnQxdK1R7HEDYMz22+8AC/VEPwDnAkMuBfqCtLFW5BwYeyg/7ql1r3yNOuRCCCXgAUlLJE1K6rBWsSDpoKQBQ7eWVjEzdPskHbW9gqScpLMlDdl8Vpe0aegvTdimp8ZXt4qU1WKBYE36o5LmGvp5SVPWsD8fQjhswmf/w2+DJCT1SFrurCqz7NEQwh9ACCEw08C9wfW2RRfAsYLmgMI042q16xdwPcRrM67MseEA3q2QNh+Mwti9C5gPnJ9c57m/u23NLPedV93+RZcY1k7bNR36tyXCx7T5mQkcjNPvAL4BjgPf2/04cMx+H7NrCDhpFLzbvtFrldgrkAHv2ylHbrpFa47ld89dIjo3ufWV0mG1scPtsbNCT3Hrf1khXyVt3i/pUguwggVuQdJTkl63jR+WtMne2yvpQ9s3c8F6Sk4XpLMknXAu+IykjZK6kyDvA/ZJKtYU0C5tLgZ+ceky+v2Aq6brHaffW4cqv9VZ2xfJTTXHgttst+Mq8VTtY2CezV8FDNvzg8YyI1fK13h1JKBdYHHij2Myi625VemF23CVCR2pMhaQy21+oYuNL4AFM2WR7tv3JbEQLd9X1QoOiTddoP0MvOMOomYDB2zuR2BlPaqwSxznAJ87uh3d6SRwYcXa4BC4xQm/HVicrNvjXGttPSmEk2FDhbrzRNnvOe077azmVKNt83MsqPudcltsLl8vXpP0HIfLHFMOA0vOsILTfIu9dMQ9Ww98BfzmhH+6UeQt6dp8RopW2HXat53f9wA/mO9ttbnLgL8cV8mAj/yJQ4MPDt5IrDBlbesKk7kjZ2wTSQ8ZMwySTphwy4yfT1jxySSNhBBKkpg2S6yNqUrSNklF1y+UJHVJ6j/t28CVLm1i1DlaYCxhi035D4uzwovuBMO7U69fPGjuMWYLjri5DVZIhm3d/GYcAzoFVhi4k3aNm6yDceHtFYjWkzHDWBbqaeHp964KMq7LS+qVdMB1RJmRsUWSCvzLoEYljUbUG+j7ZXQgSNouaYGkTouFYDKu+gfe0GQV4rRwtwAAAABJRU5ErkJggg==" alt="Alvaro Technology"><span class="pw">Powered by <b>Alvaro Technology</b></span><span class="pw">+591 72083457</span></span>
     </div>
   </div>
 </footer>
@@ -730,12 +738,33 @@ function waEnvio(dep){
   return waLink(saludo()+'quiero consultar el costo de envío a '+dep+' y cómo se coordina la entrega.');
 }
 
-/* ---------- navegación ---------- */
-function go(v,id){ VIEW=v; if(id) CURRENT=id; GAL=0; cerrarMenu(); window.scrollTo(0,0); render(); }
-function setCat(c){ CAT=c; MARCA=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); }
-function setMarca(m){ MARCA=m; CAT=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); }
-function setEsp(e){ ESP=e; CAT=''; MARCA=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); }
-function limpiar(){ CAT=''; MARCA=''; ESP=''; $('#q').value=''; $('#qclr').hidden=true; LIMITE=PASO; VIEW='list'; render(); }
+/* ---------- navegación e historial del navegador ---------- */
+// Guarda una "foto" de la pantalla actual en el historial del navegador, para
+// que el botón/gesto de "atrás" del celular o la computadora regrese un paso
+// dentro del catálogo en vez de cerrar la página completa.
+let RESTAURANDO = false;
+function estadoNav(){ return {VIEW,CURRENT,CAT,MARCA,ESP,GAL,DEP}; }
+function guardarHistorial(){
+  if(RESTAURANDO) return;
+  try{ history.pushState(estadoNav(), ''); }catch(e){}
+}
+function restaurarEstado(st){
+  st = st || {VIEW:'list',CURRENT:null,CAT:'',MARCA:'',ESP:'',GAL:0,DEP:DEP};
+  VIEW = st.VIEW || 'list'; CURRENT = st.CURRENT || null; CAT = st.CAT || '';
+  MARCA = st.MARCA || ''; ESP = st.ESP || ''; GAL = st.GAL || 0; DEP = st.DEP || DEP;
+  cerrarMenu(); window.scrollTo(0,0); render();
+}
+window.addEventListener('popstate', function(ev){
+  RESTAURANDO = true;
+  restaurarEstado(ev.state);
+  RESTAURANDO = false;
+});
+
+function go(v,id){ VIEW=v; if(id) CURRENT=id; GAL=0; cerrarMenu(); window.scrollTo(0,0); render(); guardarHistorial(); }
+function setCat(c){ CAT=c; MARCA=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); guardarHistorial(); }
+function setMarca(m){ MARCA=m; CAT=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); guardarHistorial(); }
+function setEsp(e){ ESP=e; CAT=''; MARCA=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); guardarHistorial(); }
+function limpiar(){ CAT=''; MARCA=''; ESP=''; $('#q').value=''; $('#qclr').hidden=true; LIMITE=PASO; VIEW='list'; render(); guardarHistorial(); }
 function verMas(){ LIMITE += PASO; render(); }
 function irCatalogo(){ const c=document.getElementById('catalogo'); if(c) c.scrollIntoView({block:'start'}); }
 
@@ -1303,6 +1332,7 @@ async function init(){
   });
   $('#qclr').addEventListener('click', ()=>{ $('#q').value=''; $('#qclr').hidden=true; LIMITE=PASO; render(); $('#q').focus(); });
   document.addEventListener('keydown', ev=>{ if(ev.key==='Escape') cerrarMenu(); });
+  try{ history.replaceState(estadoNav(), ''); }catch(e){}
   render();
 }
 init();
