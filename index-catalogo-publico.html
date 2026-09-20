@@ -332,15 +332,10 @@ footer .fred svg{width:16px;height:16px;flex:none}
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .copy2 .powered{flex-basis:100%;display:flex;align-items:center;justify-content:center;
   gap:6px 10px;flex-wrap:wrap;margin-top:10px;opacity:.7;transition:opacity .15s}
-.copy2 .powered .pw{white-space:nowrap}
 .copy2 .powered:hover{opacity:1}
+.copy2 .powered .pw{white-space:nowrap}
 .copy2 .powered img{width:auto;height:18px;display:block;filter:grayscale(1)}
 .copy2 .powered b{font-weight:700;color:#DDE4FB}
-@media (max-width:760px){
-  .copy2{justify-content:center;text-align:center}
-  /* aire extra abajo para que los botones flotantes no tapen el crédito */
-  footer{padding-bottom:140px}
-}
 
 /* ---------- whatsapp flotante ---------- */
 .fab{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
@@ -405,6 +400,7 @@ footer .fred svg{width:16px;height:16px;flex:none}
   .heart{width:32px;height:32px}
   .sec{padding:32px 0}
   footer .cols{grid-template-columns:1fr}
+  footer{padding-bottom:140px}
   .fab a,.fab button{width:54px;height:54px}
 }
 </style>
@@ -742,20 +738,28 @@ function waEnvio(dep){
   return waLink(saludo()+'quiero consultar el costo de envío a '+dep+' y cómo se coordina la entrega.');
 }
 
-/* ---------- navegación ---------- */
-/* El botón/gesto de "atrás" del celular normalmente sale del sitio entero,
-   porque esta es una sola página que solo cambia su contenido con
-   JavaScript, sin avisarle al navegador. Guardamos un paso de historial en
-   cada cambio de pantalla para que "atrás" vuelva a la pantalla anterior
-   del catálogo, y recién salga del sitio cuando ya no quede ninguna. */
-function estadoNav(){ return {VIEW:VIEW, CURRENT:CURRENT, CAT:CAT, MARCA:MARCA, ESP:ESP, LIMITE:LIMITE}; }
-function guardarHistorial(){ try{ history.pushState(estadoNav(), '', location.pathname+location.search); }catch(e){} }
-window.addEventListener('popstate', function(e){
-  var s = e.state;
-  if (s){ VIEW=s.VIEW; CURRENT=s.CURRENT; CAT=s.CAT; MARCA=s.MARCA; ESP=s.ESP; LIMITE=s.LIMITE; }
-  else { VIEW='list'; CURRENT=null; CAT=''; MARCA=''; ESP=''; LIMITE=PASO; }
-  GAL=0; cerrarMenu(); window.scrollTo(0,0); render();
+/* ---------- navegación e historial del navegador ---------- */
+// Guarda una "foto" de la pantalla actual en el historial del navegador, para
+// que el botón/gesto de "atrás" del celular o la computadora regrese un paso
+// dentro del catálogo en vez de cerrar la página completa.
+let RESTAURANDO = false;
+function estadoNav(){ return {VIEW,CURRENT,CAT,MARCA,ESP,GAL,DEP}; }
+function guardarHistorial(){
+  if(RESTAURANDO) return;
+  try{ history.pushState(estadoNav(), ''); }catch(e){}
+}
+function restaurarEstado(st){
+  st = st || {VIEW:'list',CURRENT:null,CAT:'',MARCA:'',ESP:'',GAL:0,DEP:DEP};
+  VIEW = st.VIEW || 'list'; CURRENT = st.CURRENT || null; CAT = st.CAT || '';
+  MARCA = st.MARCA || ''; ESP = st.ESP || ''; GAL = st.GAL || 0; DEP = st.DEP || DEP;
+  cerrarMenu(); window.scrollTo(0,0); render();
+}
+window.addEventListener('popstate', function(ev){
+  RESTAURANDO = true;
+  restaurarEstado(ev.state);
+  RESTAURANDO = false;
 });
+
 function go(v,id){ VIEW=v; if(id) CURRENT=id; GAL=0; cerrarMenu(); window.scrollTo(0,0); render(); guardarHistorial(); }
 function setCat(c){ CAT=c; MARCA=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); guardarHistorial(); }
 function setMarca(m){ MARCA=m; CAT=''; ESP=''; LIMITE=PASO; VIEW='list'; cerrarMenu(); render(); irCatalogo(); guardarHistorial(); }
@@ -1328,6 +1332,7 @@ async function init(){
   });
   $('#qclr').addEventListener('click', ()=>{ $('#q').value=''; $('#qclr').hidden=true; LIMITE=PASO; render(); $('#q').focus(); });
   document.addEventListener('keydown', ev=>{ if(ev.key==='Escape') cerrarMenu(); });
+  try{ history.replaceState(estadoNav(), ''); }catch(e){}
   render();
 }
 init();
