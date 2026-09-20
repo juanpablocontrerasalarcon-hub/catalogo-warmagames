@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/*.xlsx",
+      "README.md",
+      "index-catalogo-publico.html"
+    ],
+    "headers": [
+      { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0, must-revalidate" }] },
+      { "source": "/", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0, must-revalidate" }] },
+      { "source": "**/*.js", "headers": [{ "key": "Cache-Control", "value": "public, max-age=300" }] },
+      { "source": "**/*.@(jpg|jpeg|png|webp|gif|svg|ico)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }] }
+    ]
+  }
+}
