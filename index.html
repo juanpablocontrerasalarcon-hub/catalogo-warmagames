@@ -3,11 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WarmaGames Bolivia · Rompecabezas y Juegos de Mesa</title>
-<meta name="description" content="Juguetes para todas las edades: rompecabezas, juegos de mesa y accesorios. Envíos a todo Bolivia. Pedidos por WhatsApp.">
-<meta property="og:title" content="WarmaGames Bolivia · Rompecabezas y Juegos de Mesa">
-<meta property="og:description" content="Juguetes para todas las edades. Envíos a todo Bolivia. Pedidos por WhatsApp.">
+<title>WarmaGames Bolivia | Tienda de Juguetes, Rompecabezas y Juegos de Mesa Online</title>
+<meta name="description" content="WarmaGames: tienda online de juguetes en Bolivia. Rompecabezas, juegos de mesa, cartas coleccionables, peluches y accesorios, ideales para regalo. Precios en bolivianos, stock actualizado y envíos a La Paz, Santa Cruz, Cochabamba y los 9 departamentos. Pide por WhatsApp.">
+<meta name="keywords" content="tienda de juguetes Bolivia, juguetes online Bolivia, rompecabezas Bolivia, juegos de mesa Bolivia, cartas coleccionables Bolivia, peluches Bolivia, regalos para niños Bolivia, juguetes La Paz, juguetes Santa Cruz, juguetes Cochabamba, WarmaGames">
+<meta property="og:title" content="WarmaGames Bolivia | Tienda de Juguetes, Rompecabezas y Juegos de Mesa">
+<meta property="og:description" content="Rompecabezas, juegos de mesa, cartas coleccionables, peluches y más. Envíos a todo Bolivia. Pide por WhatsApp.">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="es_BO">
+<meta property="og:url" content="https://warmagames-catalogo.web.app/">
+<meta property="og:image" content="https://warmagames-catalogo.web.app/logo.webp">
+<link rel="canonical" href="https://warmagames-catalogo.web.app/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "WarmaGames",
+  "description": "Tienda online de juguetes en Bolivia: rompecabezas, juegos de mesa, cartas coleccionables, peluches y accesorios.",
+  "url": "https://warmagames-catalogo.web.app/",
+  "image": "https://warmagames-catalogo.web.app/logo.webp",
+  "areaServed": "BO",
+  "priceRange": "Bs"
+}
+</script>
 <link rel="icon" href="logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -544,7 +561,7 @@ const tienePrecio = p => p.precio !== '' && p.precio != null && !isNaN(Number(p.
 const imgSrc = f => {
   let v = String(f||'').replace(/[\r\n\t]/g,'').trim();
   if(!v) return '';
-  // Si quedó guardado con http://, lo forzamos a https:// — el navegador bloquea
+  // Si quedó guardado con http://, lo forzamos a https:// (el navegador bloquea
   // las imágenes http dentro de una página https y la foto nunca aparece.
   if(/^http:\/\//i.test(v)) v = 'https://' + v.slice(7);
   // Link de la página de ImgBB (ibb.co/xxxx) en vez del link directo de la imagen.
@@ -603,7 +620,7 @@ const SHEET_KEYS = {
   video:'video', videourl:'video', sku:'sku', fechaingreso:'fecha_ingreso'
 };
 // La planilla nueva usa "Código" como encabezado visible, pero significa el mismo
-// campo que antes se llamaba "id" — por eso codigo:'id' arriba. sku (referencia interna
+// campo que antes se llamaba "id", por eso codigo:'id' arriba. sku (referencia interna
 // aparte del código de venta) ya no comparte alias con "código" para no confundirlos.
 function parseCSV(text){
   const rows = []; let row = [], field = '', inQuotes = false;
@@ -707,16 +724,34 @@ const saludo = () => 'Hola '+(CFG().TIENDA||'')+', ';
 
 function waPedido(){
   const l = cartLines();
-  const p = [saludo()+'quiero hacer este pedido:'];
-  l.forEach(x=>{ p.push(x.q+' x '+x.p.nombre + (tienePrecio(x.p)?' - '+money(Number(x.p.precio)*x.q):' - precio a confirmar')); });
-  p.push('Total: '+money(cartTotal()));
+  const tienda = (CFG().TIENDA||'WarmaGames').toUpperCase();
+  const raya = ' *------------------------------* ';
+  const p = [];
+  p.push(saludo()+'quiero hacer este pedido:');
+  p.push('');
+  p.push('▶️ *_'+tienda+'_* ◀️');
+  p.push('');
+  p.push(raya);
+  p.push('  📌  *_Detalle del pedido_*');
+  p.push(raya);
+  p.push('');
+  l.forEach(x=>{
+    const precioTxt = tienePrecio(x.p) ? money(Number(x.p.precio)*x.q) : 'a confirmar';
+    p.push('✅ *x'+x.q+'* | '+x.p.nombre+' |  *'+precioTxt+'*');
+  });
+  p.push('');
+  p.push(raya);
+  p.push('  *_✅ Total a Pagar: '+money(cartTotal())+'_*');
+  p.push(raya);
+  p.push('');
   if(DEP){
     const e = envioDe(DEP);
-    p.push('Departamento: '+DEP);
-    if(e) p.push('Entrega: '+e.modo);
+    p.push('📍 Departamento: '+DEP);
+    if(e) p.push('🚚 Entrega: '+e.modo);
   }
-  if(PUNTO.trim()) p.push('Punto de entrega: '+PUNTO.trim());
-  if(COORD) p.push('Ubicación: https://maps.google.com/?q='+COORD[0].toFixed(6)+','+COORD[1].toFixed(6));
+  if(PUNTO.trim()) p.push('📌 Punto de entrega: '+PUNTO.trim());
+  if(COORD) p.push('🗺️ Ubicación: https://maps.google.com/?q='+COORD[0].toFixed(6)+','+COORD[1].toFixed(6));
+  p.push('');
   p.push('Ya realicé el pago y envío el comprobante.');
   return waLink(p.join('\n'));
 }
@@ -785,7 +820,7 @@ function vistaDiag(){
     `<tr><td>${esc(p.id)}</td><td>${esc(p.nombre)}</td>
      <td style="word-break:break-all;font-size:12px">${p.imagen ? esc(p.imagen) : '<b style="color:#C0261B">VACÍO</b>'}</td>
      <td>${p.imagen ? `<img src="${esc(imgSrc(p.imagen))}" style="width:54px;height:54px;object-fit:contain"
-        onerror="this.replaceWith(document.createTextNode('NO CARGA'))">` : '—'}</td></tr>`).join('');
+        onerror="this.replaceWith(document.createTextNode('NO CARGA'))">` : '-'}</td></tr>`).join('');
   return `<div class="in" style="padding:20px">
     <h2>Revisión de fotos (${PRODUCTOS().length} productos)</h2>
     <table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:13px">
@@ -1294,17 +1329,17 @@ async function init(){
   try{ DEP = localStorage.getItem('wg_dep') || ''; }catch(e){}
   if(!window.CONFIG){
     const b = $('#errBar'); b.hidden=false;
-    b.textContent = 'No se pudo cargar config.js — revisa que el archivo exista y no tenga errores.';
+    b.textContent = 'No se pudo cargar config.js: revisa que el archivo exista y no tenga errores.';
     window.CONFIG = {WHATSAPP:'', TIENDA:'WarmaGames', MONEDA:'Bs'};
   }
   if(!window.PRODUCTOS) window.PRODUCTOS = [];
   const usoSheet = await cargarProductosSheet();
   if(!usoSheet && CFG().SHEET_CSV){
     const b = $('#errBar'); b.hidden=false;
-    b.textContent = 'No se pudo leer el Google Sheet — mostrando el catálogo de respaldo (productos.js).';
+    b.textContent = 'No se pudo leer el Google Sheet: mostrando el catálogo de respaldo (productos.js).';
   } else if(!PRODUCTOS().length){
     const b = $('#errBar'); b.hidden=false;
-    b.textContent = 'No hay productos cargados — revisa productos.js o el Google Sheet en config.js.';
+    b.textContent = 'No hay productos cargados: revisa productos.js o el Google Sheet en config.js.';
   }
   if(DEP && !envioDe(DEP)) DEP = '';
 
