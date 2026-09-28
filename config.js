@@ -1,5 +1,5 @@
 /*
-  ARCHIVO DE CONFIGURACIÓN — WarmaGames
+  ARCHIVO DE CONFIGURACIÓN: WarmaGames
   =====================================
   Aquí se cambian los datos generales de la tienda.
   Esto casi nunca se toca (una vez configurado, se olvida).
@@ -105,7 +105,7 @@ window.CONFIG = {
   ENVIOS: {
     "La Paz": {
       modo: "Entrega a domicilio en moto",
-      detalle: "Coordinamos la entrega el mismo día en La Paz y El Alto por Yango o InDrive. El costo del envío lo cubre el cliente y se paga al recibir el pedido.",
+      detalle: "📍 Puntos de recojo:\nZona Sur: Paquetería Calle 18 de Calacoto, frente al Hipermaxi.\nCentro: Paquetería zona Correos.\n17 de Obrajes: entrega coordinando previamente la hora.\n\n🛵 A domicilio: envío mediante Yango Paquetería, directo hasta tu puerta. Costo adicional: Bs 10.\nEl pago debe hacerse antes, ya que Yango solo traslada el pedido y no cobra al momento de entregar.\n\nTú eliges la opción que te resulte más cómoda.",
       mapa: true
     },
     "Cochabamba": {
